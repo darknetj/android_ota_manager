@@ -5,7 +5,7 @@ Golang web app that provides a simple HTTP server to deliver OTA updates.:w
 How to Run:
 
     ./install.sh
-    $ ota_server -env=production -config=/var/lib/ota_server/config.yml
+    $ android_ota_server -env=production -config=/var/lib/ota_server/config.yml
 
 Command line flags:
 
@@ -15,7 +15,7 @@ Command line flags:
 
 Adding an admin user:
 
-    $ ota_server -add_user -env=production -config=/var/lib/ota_server/config.yml
+    $ android_ota_server -add_user -env=production -config=/var/lib/ota_server/config.yml
     $ > Enter a username:
     $ > Enter a password:
     $ User saved!
