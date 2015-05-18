@@ -1,0 +1,13 @@
+development:
+  port: 8080
+  directory: ./
+  databse: ./ota.sql
+  assets: ./assets
+  builds: ./builds
+
+production:
+  port: 8080
+  directory: /var/lib/ota_server
+  database: /var/lib/ota_server/ota.sql
+  assets: /var/lib/ota_server/assets
+  builds: /var/lib/ota_server/builds

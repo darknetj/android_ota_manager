@@ -1,0 +1,26 @@
+{{define "content"}}
+  <h1>Files uploaded to /build</h1>
+
+  <table class='table'>
+    <tr>
+      <th>Name</th>
+      <th>Size</th>
+      <th>Download</th>
+      <th>Delete</th>
+    </tr>
+
+    {{range .files }}
+    <tr>
+      <td>{{ .Name }}</td>
+      <td>{{ .Size }}</td>
+      <td><a href='{{ .DownloadUrl }}'>Download</a></td>
+      <td>
+        <form action="/builds/delete" method="post">
+          <input type='hidden' name='buildName' value='{{ .Name }}'>
+          <input type='submit' value='Delete'>
+        </form>
+      </td>
+    </tr>
+    {{ end }}
+  </table>
+{{ end }}
