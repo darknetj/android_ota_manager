@@ -13,7 +13,7 @@ echo "> Touching $dbPath"
 touch $dbPath
 echo "> Copying static assets to $appPath"
 cp -rf ./templates $appPath/templates
-cp -rf ./assets $appPath/assets
+# cp -rf ./assets $appPath/assets
 mkdir $appPath/builds
 echo "> Installing systemd service"
 cp lib/ota_server.service /usr/lib/systemd/system/ota_server.service
@@ -26,8 +26,8 @@ echo "> Setting permissions"
 chmod -R 777 $dbPath
 chmod -R 777 $appPath
 chmod -R 777 $appPath/templates
-chmod -R 777 $appPath/assets
-chmod -R 777 $appPath/assets/*
+# chmod -R 777 $appPath/assets
+# chmod -R 777 $appPath/assets/*
 chmod -R 777 $appPath/builds
 chmod -R 777 $appPath/builds/*
 

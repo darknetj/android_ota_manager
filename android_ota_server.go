@@ -33,18 +33,16 @@ func main() {
 
   // Connect to database
   databasePath,_ := cfg.String("database")
-
   db := models.InitDb(databasePath)
   defer db.Db.Close()
 
   // Start server
   port,_ := cfg.String("port")
   log.Println("--- Started Copperhead OTA Server on port", port, "---")
-
-  router()
+  server()
 }
 
-func router() {
+func server() {
   r := mux.NewRouter()
 
   // Releases
