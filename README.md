@@ -1,6 +1,6 @@
 # Android OTA Server
 
-Golang web app that provides a simple HTTP server to deliver OTA updates.:w
+Golang web app that provides a simple HTTP server to deliver OTA updates.
 
 How to Run:
 
