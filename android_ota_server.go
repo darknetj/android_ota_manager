@@ -5,23 +5,19 @@ package main
 import (
   "log"
   "flag"
-  "sync"
   "net/http"
-  "html/template"
-  "path/filepath"
   "gopkg.in/gorp.v1"
   _ "github.com/mattn/go-sqlite3"
   "github.com/olebedev/config"
   "github.com/gorilla/mux"
   "github.com/copperhead-security/android_ota_server/models"
+  "github.com/copperhead-security/android_ota_server/controllers"
   "github.com/copperhead-security/android_ota_server/lib"
-  // "html/template"
 )
 
 var (
   cfg *config.Config
-  dbmap *gorp.DbMap
-  // cookieStore sessions.Store
+  db *gorp.DbMap
 )
 
 func main() {
@@ -37,8 +33,9 @@ func main() {
 
   // Connect to database
   databasePath,_ := cfg.String("database")
-  dbmap := lib.InitDb(databasePath)
-  defer dbmap.Db.Close()
+
+  db := models.InitDb(databasePath)
+  defer db.Db.Close()
 
   // Start server
   port,_ := cfg.String("port")
@@ -49,32 +46,28 @@ func main() {
 
 func router() {
   r := mux.NewRouter()
-  r.HandleFunc("/", models.ReleasesJSONHandler)
-  r.HandleFunc("/releases.json", models.ReleasesJSONHandler)
-  r.HandleFunc("/files", models.FilesHandler)
+
+  // Releases
+  r.HandleFunc("/", controllers.Releases)
+  r.HandleFunc("/releases", controllers.Releases)
+  r.HandleFunc("/releases/{id}", controllers.ShowReleases)
+  r.HandleFunc("/releases/edit{id}", controllers.EditReleases)
+  r.HandleFunc("/releases/update", controllers.UpdateReleases)
+  r.HandleFunc("/releases/new", controllers.NewReleases)
+  r.HandleFunc("/releases/create", controllers.CreateReleases)
+  r.HandleFunc("/releases/delete", controllers.DeleteReleases)
+
+  // Files
+  r.HandleFunc("/files", controllers.Files)
+  r.HandleFunc("/files/delete", controllers.DeleteFiles)
+
+  // Users
+  r.HandleFunc("/users", controllers.Users)
+  r.HandleFunc("/login", controllers.Login)
+  r.HandleFunc("/authenticate", controllers.Authenticate)
+  r.HandleFunc("/logout", controllers.Logout)
+
+  // Server
   http.Handle("/", r)
-}
-
-// Cached templates
-var cachedTemplates = map[string]*template.Template{}
-var cachedMutex sync.Mutex
-var funcs = template.FuncMap{}
-
-func T(name string) *template.Template {
-  cachedMutex.Lock()
-  defer cachedMutex.Unlock()
-
-  if t, ok := cachedTemplates[name]; ok {
-      return t
-  }
-
-  t := template.New("_base.html").Funcs(funcs)
-
-  t = template.Must(t.ParseFiles(
-      "views/layout.html",
-      filepath.Join("templates", name),
-  ))
-  cachedTemplates[name] = t
-
-  return t
+  http.ListenAndServe(":8080", nil)
 }
