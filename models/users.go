@@ -2,7 +2,6 @@ package models
 
 import (
     "log"
-    "github.com/copperhead-security/android_ota_server/lib"
 )
 
 type User struct {
@@ -20,24 +19,24 @@ type LoginForm struct {
 func UserList() []User {
     var users []User
     _, err := dbmap.Select(&users, "select * from users order by user_id DESC")
-    lib.CheckErr(err, "Select all users failed")
+    if err != nil {
+      log.Println("Select all users failed", err)
+    }
     return users
 }
 
-func FindUser(id int64) User {
-    var user User
+func FindUser(user User, id int64) error {
     err := dbmap.SelectOne(&user, "select * from users where user_id=?", id)
     if err != nil {
-      log.Println(err)
+      log.Println("Find user by user_id failed", id, err)
     }
-    return user
+    return err
 }
 
-func FindUserByUsername(username string) User {
-    var user User
+func FindUserByUsername(user User, username string) error {
     err := dbmap.SelectOne(&user, "select * from users where username=?", username)
     if err != nil {
-      log.Println(err)
+      log.Println("Find user by username failed", username, err)
     }
-    return user
+    return err
 }

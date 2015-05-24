@@ -29,6 +29,9 @@
     </div>
   </nav>
   <div class='container'>
+    {{range .flashes }}
+      <div class="alert alert-info" role="alert">{{ . }}</div>
+    {{ end }}
     {{template "content" }}
   </div>
 </body>

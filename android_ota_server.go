@@ -36,6 +36,9 @@ func main() {
   db := models.InitDb(databasePath)
   defer db.Db.Close()
 
+  // Create auth cookie store
+  controllers.InitAuth()
+
   // Start server
   port,_ := cfg.String("port")
   log.Println("--- Started Copperhead OTA Server on port", port, "---")

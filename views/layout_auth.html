@@ -1,4 +1,3 @@
-{{define "base"}}
 <html>
 <head>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
@@ -13,8 +12,10 @@
     </div>
   </nav>
   <div class='container'>
-    {{template "content" .}}
+    {{range .flashes }}
+      <div class="alert alert-error" role="alert">{{ . }}</div>
+    {{ end }}
+    {{template "content" }}
   </div>
 </body>
 </html>
-{{end}}

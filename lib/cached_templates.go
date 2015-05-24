@@ -2,6 +2,7 @@ package lib
 
 import (
   "sync"
+  "strings"
   "html/template"
   "path/filepath"
 )
@@ -19,16 +20,19 @@ func T(name string) *template.Template {
       return t
   }
 
-  t := template.New("layout.html").Funcs(funcs)
+  layout := "layout.html"
+  layout_path := "views/layout.html"
+  if strings.Contains(name, "login") {
+    layout = "layout_auth.html"
+    layout_path = "views/layout_auth.html"
+  }
 
+  t := template.New(layout).Funcs(funcs)
   t = template.Must(t.ParseFiles(
-      "views/layout.html",
+      layout_path,
       filepath.Join("views", name),
   ))
 
-  // r.SetHTMLTemplate(template.Must(template.ParseFiles(baseTemplate, "templates/releases_form.html")))
-  // c.HTML(200, "base", data)
   cachedTemplates[name] = t
-
   return t
 }
