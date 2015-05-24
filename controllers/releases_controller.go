@@ -8,7 +8,6 @@ import (
     "net/http"
     "encoding/json"
     "github.com/copperhead-security/android_ota_server/models"
-    "github.com/copperhead-security/android_ota_server/lib"
     "github.com/gorilla/mux"
 )
 
@@ -52,7 +51,7 @@ func Releases(w http.ResponseWriter, r *http.Request) {
     data := map[string]interface{} {
       "releases": models.ReleasesIndex(),
     }
-    lib.T("releases.html").Execute(w, data)
+    R.HTML(w, http.StatusOK, "releases", data)
 }
 
 // GET /releases/new
@@ -63,7 +62,7 @@ func NewReleases(w http.ResponseWriter, r *http.Request) {
          "title": "New Release",
          "endpoint": "/releases/create",
     }
-    lib.T("releases_form.html").Execute(w, data)
+    R.HTML(w, http.StatusOK, "releases_form", data)
 }
 
 // POST /releases/create
@@ -93,7 +92,7 @@ func ShowReleases(w http.ResponseWriter, r *http.Request) {
     id,_ := strconv.ParseInt(vars["id"],10,64)
     release := models.FindRelease(id)
     data := map[string]interface{} {"release": release}
-    lib.T("releases_show.html").Execute(w, data)
+    R.HTML(w, http.StatusOK, "releases_show", data)
 }
 
 // POST /releases/edit/:id
@@ -107,7 +106,7 @@ func EditReleases(w http.ResponseWriter, r *http.Request) {
             "title": "Edit Release",
             "endpoint": "/releases/update",
     }
-    lib.T("releases_form.html").Execute(w, data)
+    R.HTML(w, http.StatusOK, "releases_form", data)
 }
 
 // POST /releases/update

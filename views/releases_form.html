@@ -1,53 +1,51 @@
-{{define "content"}}
-  <a href="/releases">< Back to Releases</a>
-  <h1>{{ .title }}</h1>
-  <form action='{{ .endpoint }}' method="post">
+<a href="/releases">< Back to Releases</a>
+<h1>{{ .title }}</h1>
+<form action='{{ .endpoint }}' method="post">
+<div class="form-group">
+  <label for="Filename">
+    Build file (zip files uploaded to /builds directory) 
+    <a href='/builds'>Manage Files</a>
+  </label>
+  <select name='Filename' class='form-control'>
+    {{range .files }}
+      <option value='{{ .Name }}'>{{ .Name }}</option>
+    {{ end }}
+  </select>
+</div>
+{{with .release }}
   <div class="form-group">
-    <label for="Filename">
-      Build file (zip files uploaded to /builds directory) 
-      <a href='/builds'>Manage Files</a>
-    </label>
-    <select name='Filename' class='form-control'>
-      {{range .files }}
-        <option value='{{ .Name }}'>{{ .Name }}</option>
-      {{ end }}
+    <label for="VersionNo">Version of Release</label>
+    <input type="text" class="form-control" name="VersionNo" placeholder="0.0.1" value="{{ .VersionNo }}">
+  </div>
+  <div class="form-group">
+    <label for="VersionNo">Build date (Unix timestamp)</label>
+    <input type="text" class="form-control" name="BuildDate" placeholder="Build BuildDate" value="{{ .BuildDate }}">
+  </div>
+  <div class="form-group">
+    <label for="ApiLevel">API Level</label>
+    <input type="text" class="form-control" name="ApiLevel" placeholder="21" value="{{ .ApiLevel }}">
+  </div>
+  <div class="form-group">
+    <label for="Channel">Version of Release</label>
+    <select name='Channel' class='form-control'>
+      <option value='TESTING'>TESTING</option>
+      <option value='NIGHTLY'>NIGHTLY</option>
+      <option value='STABLE'>STABLE</option>
     </select>
   </div>
-  {{with .release }}
-    <div class="form-group">
-      <label for="VersionNo">Version of Release</label>
-      <input type="text" class="form-control" name="VersionNo" placeholder="0.0.1" value="{{ .VersionNo }}">
-    </div>
-    <div class="form-group">
-      <label for="VersionNo">Build date (Unix timestamp)</label>
-      <input type="text" class="form-control" name="BuildDate" placeholder="Build BuildDate" value="{{ .BuildDate }}">
-    </div>
-    <div class="form-group">
-      <label for="ApiLevel">API Level</label>
-      <input type="text" class="form-control" name="ApiLevel" placeholder="21" value="{{ .ApiLevel }}">
-    </div>
-    <div class="form-group">
-      <label for="Channel">Version of Release</label>
-      <select name='Channel' class='form-control'>
-        <option value='TESTING'>TESTING</option>
-        <option value='NIGHTLY'>NIGHTLY</option>
-        <option value='STABLE'>STABLE</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="Changelog">Release notes</label>
-      <textarea rows='10' cols='50' name='Changelog' class='form-control'>{{ .Changelog }}</textarea>
-    </div>
-    {{ end }}
-    <button type="submit" class="btn btn-default">Save</button>
-  </form>
+  <div class="form-group">
+    <label for="Changelog">Release notes</label>
+    <textarea rows='10' cols='50' name='Changelog' class='form-control'>{{ .Changelog }}</textarea>
+  </div>
+  {{ end }}
+  <button type="submit" class="btn btn-default">Save</button>
+</form>
 
-  <!-- 'incremental': '7f96568932', -->
-  <!-- 'api_level': '19', -->
-  <!-- 'url': 'http://builds.copperhead.co/57124/copperhead&#45;20140130&#45;NIGHTLY.zip', -->
-  <!-- 'timestamp': '1391086037', -->
-  <!-- 'md5sum': '4e0a335b378035d12cb6626b6623072b', -->
-  <!-- 'changes': 'http://builds.copperhead.co/57124/CHANGES.txt', -->
-  <!-- 'channel': 'nightly', -->
-  <!-- 'filename': 'copperhead&#45;20140130&#45;NIGHTLY.zip', -->
-{{ end }}
+<!-- 'incremental': '7f96568932', -->
+<!-- 'api_level': '19', -->
+<!-- 'url': 'http://builds.copperhead.co/57124/copperhead&#45;20140130&#45;NIGHTLY.zip', -->
+<!-- 'timestamp': '1391086037', -->
+<!-- 'md5sum': '4e0a335b378035d12cb6626b6623072b', -->
+<!-- 'changes': 'http://builds.copperhead.co/57124/CHANGES.txt', -->
+<!-- 'channel': 'nightly', -->
+<!-- 'filename': 'copperhead&#45;20140130&#45;NIGHTLY.zip', -->

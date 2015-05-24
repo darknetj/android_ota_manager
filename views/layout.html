@@ -32,7 +32,7 @@
     {{range .flashes }}
       <div class="alert alert-info" role="alert">{{ . }}</div>
     {{ end }}
-    {{template "content" }}
+    {{ yield }}
   </div>
 </body>
 </html>

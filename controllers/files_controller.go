@@ -4,13 +4,12 @@ import (
     "fmt"
     "net/http"
     "github.com/copperhead-security/android_ota_server/models"
-    "github.com/copperhead-security/android_ota_server/lib"
 )
 
 // GET /files
 func Files(w http.ResponseWriter, r *http.Request) {
     data := map[string]interface{} {"files": models.Files()}
-    lib.T("files.html").Execute(w, data)
+    R.HTML(w, http.StatusOK, "files", data)
 }
 
 // POST /files/delete

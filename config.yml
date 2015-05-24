@@ -1,7 +1,7 @@
 development:
   port: 8080
   directory: ./
-  databse: ./ota.sql
+  database: ./ota.sql
   assets: ./assets
   builds: ./builds
 

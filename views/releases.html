@@ -1,33 +1,31 @@
-{{define "content"}}
-  <a href="/releases/new" class="new btn btn-primary">New Release</a>
-  <h1>Releases</h1>
-  <table class='table'>
-    <tr>
-      <th>Version</th>
-      <th>Filename</th>
-      <th>Channel</th>
-      <th>Published</th>
-      <th>Download</th>
-      <th colspan='2'>Actions</th>
-    </tr>
+<a href="/releases/new" class="new btn btn-primary">New Release</a>
+<h1>Releases</h1>
+<table class='table'>
+  <tr>
+    <th>Version</th>
+    <th>Filename</th>
+    <th>Channel</th>
+    <th>Published</th>
+    <th>Download</th>
+    <th colspan='2'>Actions</th>
+  </tr>
 
-    {{range .releases }}
-      <tr>
-        <td><a href='/releases/show/{{ .Id }}'>{{ .VersionNo }}</a></td>
-        <td>{{ .Filename }}</td>
-        <td>{{ .Channel }}</td>
-        <td>
-          Yes
-        </td>
-        <td><a href='/builds/{{ .Filename }}'>Download</a></td>
-        <td><a href='/releases/edit/{{ .Id }}'>Edit</a></td>
-        <td>
-          <form action="/releases/delete" method="post">
-            <input type='hidden' name='Id' value='{{ .Id }}'>
-            <input type='submit' value='Delete'>
-          </form>
-        </td>
-      </tr>
-    {{ end }}
-  </table>
-{{end}}
+  {{range .releases }}
+    <tr>
+      <td><a href='/releases/show/{{ .Id }}'>{{ .VersionNo }}</a></td>
+      <td>{{ .Filename }}</td>
+      <td>{{ .Channel }}</td>
+      <td>
+        Yes
+      </td>
+      <td><a href='/builds/{{ .Filename }}'>Download</a></td>
+      <td><a href='/releases/edit/{{ .Id }}'>Edit</a></td>
+      <td>
+        <form action="/releases/delete" method="post">
+          <input type='hidden' name='Id' value='{{ .Id }}'>
+          <input type='submit' value='Delete'>
+        </form>
+      </td>
+    </tr>
+  {{ end }}
+</table>

@@ -2,6 +2,8 @@ package models
 
 import (
     "log"
+    "time"
+    "github.com/elithrar/simple-scrypt"
 )
 
 type User struct {
@@ -14,6 +16,16 @@ type User struct {
 type LoginForm struct {
     User     string `form:"user" binding:"required"`
     Password string `form:"password" binding:"required"`
+}
+
+func (u *User) CreatedAt() time.Time {
+    t := time.Unix(0, u.Created)
+    return t
+}
+
+func (u *User) HumanCreatedAt() string {
+    createdAt := u.CreatedAt()
+    return createdAt.Format(time.RFC3339)
 }
 
 func UserList() []User {
@@ -37,6 +49,26 @@ func FindUserByUsername(user User, username string) error {
     err := dbmap.SelectOne(&user, "select * from users where username=?", username)
     if err != nil {
       log.Println("Find user by username failed", username, err)
+    }
+    return err
+}
+
+func CreateUser(username string, password string) error {
+    hash, err := scrypt.GenerateFromPassword([]byte(password), scrypt.DefaultParams)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    user := User{
+      Created: time.Now().UnixNano(),
+      Username: username,
+      Password: string(hash),
+    }
+
+    // Insert into db
+    err = dbmap.Insert(&user)
+    if err != nil {
+      log.Println("Create user failed", username, err)
     }
     return err
 }
