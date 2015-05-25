@@ -29,29 +29,27 @@ func Users(w http.ResponseWriter, r *http.Request) {
 func Authenticate(w http.ResponseWriter, r *http.Request) {
     r.ParseForm()
     session, _ := CookieStore.Get(r, "auth")
-    log.Println("auuth")
     username := r.FormValue("username")
     password := r.FormValue("password")
 
-    var user models.User
-    err := models.FindUserByUsername(user, username)
-    if err != nil {
-        // Uses the parameters from the existing derived key. Return an error if they don't match.
+    user, err := models.FindUserByUsername(username)
+    if err == nil {
+        log.Println(user)
+        log.Println(user.Password)
         err = scrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-        if err != nil {
+        if err == nil {
+            session.Values["userid"] = user.Id
+            session.Save(r, w)
+            http.Redirect(w, r, "/admin/releases", http.StatusFound)
+        } else {
             log.Println("Login failed", err)
             session.AddFlash("Login failed, bad password!")
+            session.Save(r, w)
             http.Redirect(w, r, "/login", http.StatusFound)
-        } else {
-            // session := sessions.Get(c)
-            // log.Println(session)
-            // log.Println(user.Id)
-            // session.Set("userid", strconv.FormatInt(user.Id,10))
-            // session.Save()
-            http.Redirect(w, r, "/releases", http.StatusFound)
         }
     } else {
         session.AddFlash("Login failed, username not found!")
+        session.Save(r, w)
         http.Redirect(w, r, "/login", http.StatusFound)
     }
 }
@@ -67,5 +65,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
+    session, _ := CookieStore.Get(r, "auth")
+    session.Values["userid"] = nil
+    session.Save(r, w)
     http.Redirect(w, r, "/login", http.StatusFound)
 }

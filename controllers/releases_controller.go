@@ -82,7 +82,7 @@ func CreateReleases(w http.ResponseWriter, r *http.Request) {
 
     models.CreateRelease(release)
 
-    url := fmt.Sprintf("/releases")
+    url := fmt.Sprintf("/admin/releases")
     http.Redirect(w, r, url, http.StatusFound)
 }
 
@@ -104,7 +104,7 @@ func EditReleases(w http.ResponseWriter, r *http.Request) {
             "release": release,
             "files": models.Files(),
             "title": "Edit Release",
-            "endpoint": "/releases/update",
+            "endpoint": "/admin/releases/update",
     }
     R.HTML(w, http.StatusOK, "releases_form", data)
 }
@@ -126,7 +126,7 @@ func UpdateReleases(w http.ResponseWriter, r *http.Request) {
     models.UpdateRelease(release)
 
     // Redirect
-    url := fmt.Sprintf("/releases/show/%i", id)
+    url := fmt.Sprintf("/admin/releases/show/%i", id)
     http.Redirect(w, r, url, http.StatusFound)
 }
 
@@ -139,6 +139,6 @@ func DeleteReleases(w http.ResponseWriter, r *http.Request) {
     // Delete from DB
     models.DeleteRelease(release)
 
-    url := fmt.Sprintf("/releases")
+    url := fmt.Sprintf("/admin/releases")
     http.Redirect(w, r, url, http.StatusFound)
 }
