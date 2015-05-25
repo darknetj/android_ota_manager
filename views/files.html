@@ -14,7 +14,7 @@
     <td>{{ .Size }}</td>
     <td><a href='{{ .DownloadUrl }}'>Download</a></td>
     <td>
-      <form action="/builds/delete" method="post">
+      <form action="{{ .DeleteUrl }}" method="post">
         <input type='hidden' name='buildName' value='{{ .Name }}'>
         <input type='submit' value='Delete'>
       </form>

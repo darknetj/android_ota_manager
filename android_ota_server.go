@@ -9,11 +9,13 @@ import (
   "fmt"
   "os"
   "strings"
-  "net/http"
+//  "net/http"
   "gopkg.in/gorp.v1"
   _ "github.com/mattn/go-sqlite3"
   "github.com/olebedev/config"
   "github.com/gorilla/mux"
+  "github.com/codegangsta/negroni"
+  "github.com/unrolled/secure"
   "github.com/copperhead-security/android_ota_server/models"
   "github.com/copperhead-security/android_ota_server/controllers"
   "github.com/copperhead-security/android_ota_server/lib"
@@ -22,6 +24,7 @@ import (
 var (
   cfg *config.Config
   db *gorp.DbMap
+  development bool
 )
 
 func main() {
@@ -35,6 +38,7 @@ func main() {
   cfg,err := config.ParseYamlFile(*configPath)
   cfg,err = cfg.Get(*env)
   port,_ := cfg.String("port")
+  development = strings.Contains(*env, "development")
   lib.CheckErr(err, "Config parsing failed")
 
   // Connect to database
@@ -53,35 +57,62 @@ func main() {
 
 func server(port string) {
   log.Println("--- Started Copperhead OTA Server on port", port, "---")
+
   // Create auth cookie store
   controllers.InitMiddleware()
 
   // Create router
   r := mux.NewRouter()
+  admin := mux.NewRouter()
+
+  // Releases API
+  r.HandleFunc("/", controllers.Releases)
+  r.HandleFunc("/releases.json", controllers.ReleasesJSON)
+
+  // Authentication
+  r.HandleFunc("/login", controllers.Login)
+  r.HandleFunc("/logout", controllers.Logout)
+  r.HandleFunc("/authenticate", controllers.Authenticate)
 
   // Releases
-  r.HandleFunc("/", controllers.Releases)
-  r.HandleFunc("/releases", controllers.Releases)
-  r.HandleFunc("/releases/{id}", controllers.ShowReleases)
-  r.HandleFunc("/releases/edit{id}", controllers.EditReleases)
-  r.HandleFunc("/releases/update", controllers.UpdateReleases)
-  r.HandleFunc("/releases/new", controllers.NewReleases)
-  r.HandleFunc("/releases/create", controllers.CreateReleases)
-  r.HandleFunc("/releases/delete", controllers.DeleteReleases)
+  admin.HandleFunc("/admin/releases", controllers.Releases)
+  admin.HandleFunc("/admin/releases/{id}", controllers.ShowReleases)
+  admin.HandleFunc("/admin/releases/edit{id}", controllers.EditReleases)
+  admin.HandleFunc("/admin/releases/update", controllers.UpdateReleases)
+  admin.HandleFunc("/admin/releases/new", controllers.NewReleases)
+  admin.HandleFunc("/admin/releases/create", controllers.CreateReleases)
+  admin.HandleFunc("/admin/releases/delete", controllers.DeleteReleases)
 
   // Files
-  r.HandleFunc("/files", controllers.Files)
-  r.HandleFunc("/files/delete", controllers.DeleteFiles)
+  admin.HandleFunc("/admin/files", controllers.Files)
+  admin.HandleFunc("/admin/files/delete", controllers.DeleteFiles)
 
   // Users
-  r.HandleFunc("/users", controllers.Users)
-  r.HandleFunc("/login", controllers.Login)
-  r.HandleFunc("/authenticate", controllers.Authenticate)
-  r.HandleFunc("/logout", controllers.Logout)
+  admin.HandleFunc("/admin/users", controllers.Users)
 
-  // Server
-  http.Handle("/", r)
-  http.ListenAndServe(":8080", nil)
+  // Negroni
+  secureMiddleware := secure.New(secure.Options{
+    AllowedHosts: []string{"builds.copperhead.co"},
+    SSLRedirect: true,
+    STSSeconds: 315360000,
+    STSPreload: true,
+    FrameDeny: true,
+    ContentTypeNosniff: true,
+    BrowserXssFilter: true,
+    ContentSecurityPolicy: "default-src 'self'; style-src 'self' https://maxcdn.bootstrapcdn.com; font-src https://maxcdn.bootstrapcdn.com;",
+    IsDevelopment: development,
+  })
+
+  // Create a new negroni for the admin middleware
+  r.PathPrefix("/admin").Handler(negroni.New(
+    controllers.AuthMiddleware(),
+    negroni.Wrap(admin),
+  ))
+
+  n := negroni.Classic()
+  n.Use(negroni.HandlerFunc(secureMiddleware.HandlerFuncWithNext))
+  n.UseHandler(r)
+  n.Run(":8080")
 }
 
 func addUser() {

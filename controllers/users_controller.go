@@ -60,6 +60,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
     session, _ := CookieStore.Get(r, "auth")
     data := map[string]interface{} {
       "flashes": session.Flashes(),
+      "noAuth": true,
     }
     session.Save(r, w)
     R.HTML(w, http.StatusOK, "user_login", data)

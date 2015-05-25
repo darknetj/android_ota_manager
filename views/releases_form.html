@@ -1,10 +1,10 @@
-<a href="/releases">< Back to Releases</a>
+<a href="/admin/releases">< Back to Releases</a>
 <h1>{{ .title }}</h1>
 <form action='{{ .endpoint }}' method="post">
 <div class="form-group">
   <label for="Filename">
     Build file (zip files uploaded to /builds directory) 
-    <a href='/builds'>Manage Files</a>
+    <a href='/admin/files/'>Manage Files</a>
   </label>
   <select name='Filename' class='form-control'>
     {{range .files }}
@@ -40,12 +40,3 @@
   {{ end }}
   <button type="submit" class="btn btn-default">Save</button>
 </form>
-
-<!-- 'incremental': '7f96568932', -->
-<!-- 'api_level': '19', -->
-<!-- 'url': 'http://builds.copperhead.co/57124/copperhead&#45;20140130&#45;NIGHTLY.zip', -->
-<!-- 'timestamp': '1391086037', -->
-<!-- 'md5sum': '4e0a335b378035d12cb6626b6623072b', -->
-<!-- 'changes': 'http://builds.copperhead.co/57124/CHANGES.txt', -->
-<!-- 'channel': 'nightly', -->
-<!-- 'filename': 'copperhead&#45;20140130&#45;NIGHTLY.zip', -->

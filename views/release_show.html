@@ -1,5 +1,5 @@
 {{define "content"}}
-  <a href="/releases">< Back to Releases</a>
+  <a href="/admin/releases">< Back to Releases</a>
   <h1>Showing Release {{ .VersionNo }}</h1>
 
   {{with .release }}
@@ -32,13 +32,13 @@
       <tr>
         <td>Download</td>
         <td>
-          <p><a href='/downloads/{{ .Filename }}'>Download</a></p>
+          <p><a href='{{ .DownloadUrl }}'>Download</a></p>
         </td>
       </tr>
       <tr>
         <td>Delete</td>
         <td>
-          <form action="/releases/delete" method="post">
+          <form action="/admin/releases/delete" method="post">
             <input type='hidden' name='Id' value='{{ .Id }}'>
             <input type='submit' value='Delete'>
           </form>
