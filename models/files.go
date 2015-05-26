@@ -1,9 +1,11 @@
 package models
 
 import (
+    "log"
     "fmt"
     "strings"
     "io/ioutil"
+    "github.com/rakyll/magicmime"
 )
 
 type File struct {
@@ -33,4 +35,28 @@ func Files() []File {
     }
     fmt.Println(buildFiles)
     return buildFiles
+}
+
+func ProcessFiles() {
+    var buildFiles []File
+    mm,_ := magicmime.New(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR)
+    files, _ := ioutil.ReadDir(BuildsPath)
+    for _, f := range files {
+        filepath := strings.Join([]string{BuildsPath, f.Name()}, "")
+        mimetype,_ := mm.TypeByFile(filepath)
+        log.Println(mimetype)
+        if mimetype == "application/zip" {
+            file := File{
+                Name: f.Name(),
+                Size: f.Size(),
+            }
+            buildFiles = append(buildFiles, file)
+            log.Println(file)
+        }
+    }
+    fmt.Println(buildFiles)
+
+    // TODO: Prune DB for old files
+    // loop through each in db
+    // check if file still exists, if not delete from db
 }

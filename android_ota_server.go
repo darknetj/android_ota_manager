@@ -47,6 +47,7 @@ func main() {
   // Connect to database
   databasePath,_ := cfg.String("database")
   db := models.InitDb(databasePath, builds)
+  models.ProcessFiles()
   defer db.Db.Close()
 
   if *testFlag {
