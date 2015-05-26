@@ -99,10 +99,9 @@ func server(port string, templates string) {
 
   // Negroni
   secureMiddleware := secure.New(secure.Options{
-    AllowedHosts: []string{"builds.copperhead.co"},
-    SSLRedirect: true,
-    STSSeconds: 315360000,
-    STSPreload: true,
+    AllowedHosts: []string{"127.0.0.1", "localhost", "builds.copperhead.co"},
+    SSLRedirect: false,
+    STSPreload: false,
     FrameDeny: true,
     ContentTypeNosniff: true,
     BrowserXssFilter: true,
