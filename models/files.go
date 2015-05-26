@@ -6,9 +6,11 @@ import (
     "strings"
     "os"
     "io"
+    "bufio"
     "encoding/hex"
     "crypto/md5"
     "io/ioutil"
+    "archive/zip"
     "github.com/rakyll/magicmime"
 )
 
@@ -18,6 +20,11 @@ type File struct {
     Name string
     Size int64
     Md5 string
+    BuildDate string
+    ApiLevel string
+    Incremental string
+    Device string
+    User string
 }
 
 func (b *File) DownloadUrl() string {
@@ -52,10 +59,16 @@ func ProcessFiles() {
         filepath := strings.Join([]string{BuildsPath, f.Name()}, "/")
         mimetype,_ := mm.TypeByFile(filepath)
         if mimetype == "application/java-archive" {
+            props := BuildPropsFromZip(filepath)
             file := File{
                 Name: f.Name(),
                 Size: f.Size(),
                 Md5: Md5File(filepath),
+                BuildDate: props["ro.build.date.utc"],
+                ApiLevel: props["ro.build.version.sdk"],
+                Incremental: props["ro.build.version.incremental"],
+                Device: props["ro.product.name"],
+                User: props["ro.build.user"],
             }
             fileList = append(fileList, file)
         } else {
@@ -63,7 +76,7 @@ func ProcessFiles() {
         }
     }
     buildFiles = fileList
-
+    log.Println(buildFiles)
     // TODO: Prune DB for old files
     // loop through each in db
     // check if file still exists, if not delete from db
@@ -74,4 +87,29 @@ func Md5File(filepath string) string {
 	buf := md5.New()
 	io.Copy(buf, h)
   return hex.EncodeToString(buf.Sum(nil))
+}
+
+func BuildPropsFromZip(filepath string) map[string]string {
+    props := make(map[string]string)
+    r, err := zip.OpenReader(filepath)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer r.Close()
+
+    // Iterate through the files in the archive
+    for _, f := range r.File {
+        if f.Name == "system/build.prop" {
+            rc,_ := f.Open()
+            scanner := bufio.NewScanner(rc)
+            for scanner.Scan() {
+                if strings.Contains(scanner.Text(), "=") {
+                    scanLine := strings.Split(scanner.Text(), "=")
+                    props[scanLine[0]] = scanLine[1]
+                }
+            }
+            rc.Close()
+        }
+    }
+    return props
 }
