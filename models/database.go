@@ -9,8 +9,9 @@ import (
 )
 
 var dbmap *gorp.DbMap
+var BuildsPath string
 
-func InitDb(dbPath string) *gorp.DbMap {
+func InitDb(dbPath string, builds string) *gorp.DbMap {
   log.Println("Connecting to database ", dbPath)
   db, err := sql.Open("sqlite3", dbPath)
   lib.CheckErr(err, "sql.Open failed")
@@ -24,5 +25,7 @@ func InitDb(dbPath string) *gorp.DbMap {
 
   err = dbmap.CreateTablesIfNotExists()
   lib.CheckErr(err, "Create tables failed")
+
+  BuildsPath = builds
   return dbmap
 }

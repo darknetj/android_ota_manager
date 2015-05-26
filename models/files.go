@@ -22,7 +22,7 @@ func (b *File) DeleteUrl() string {
 }
 
 func Files() []File {
-    files, _ := ioutil.ReadDir("./builds")
+    files, _ := ioutil.ReadDir(BuildsPath)
     buildFiles := make([]File, 0)
     for _, f := range files {
         file := File{f.Name(), f.Size()}

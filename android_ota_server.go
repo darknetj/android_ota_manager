@@ -41,11 +41,12 @@ func main() {
   port,_ := cfg.String("port")
   development = strings.Contains(*env, "development")
   templates,_ := cfg.String("templates")
+  builds,_ := cfg.String("builds")
   lib.CheckErr(err, "Config parsing failed")
 
   // Connect to database
   databasePath,_ := cfg.String("database")
-  db := models.InitDb(databasePath)
+  db := models.InitDb(databasePath, builds)
   defer db.Db.Close()
 
   if *testFlag {
@@ -56,6 +57,7 @@ func main() {
       addUser()
     } else {
       // Start server
+      controllers.InitMiddleware(templates)
       server(port, templates)
     }
   }
@@ -64,15 +66,12 @@ func main() {
 func server(port string, templates string) {
   log.Println("--- Started Copperhead OTA Server on port", port, "---")
 
-  // Create auth cookie store
-  controllers.InitMiddleware(templates)
-
   // Create router
   r := mux.NewRouter()
   admin := mux.NewRouter()
 
   // Releases API
-  r.HandleFunc("/", controllers.Releases).Methods("GET")
+  r.HandleFunc("/", controllers.ReleasesJSON).Methods("GET")
   r.HandleFunc("/", controllers.PostReleasesJSON).Methods("POST")
   r.HandleFunc("/releases.json", controllers.ReleasesJSON)
 
