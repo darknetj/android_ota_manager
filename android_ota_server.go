@@ -19,6 +19,7 @@ import (
   "github.com/copperhead-security/android_ota_server/models"
   "github.com/copperhead-security/android_ota_server/controllers"
   "github.com/copperhead-security/android_ota_server/lib"
+  "github.com/copperhead-security/android_ota_server/tests"
 )
 
 var (
@@ -32,6 +33,7 @@ func main() {
   configPath := flag.String("config", "./config.yml", "Path to config file")
   env := flag.String("env", "development", "Run in development or production mode")
   userFlag := flag.Bool("add_user", false, "Run CLI for adding user to database")
+  testFlag := flag.Bool("test", false, "Run test script to simulate client")
   flag.Parse()
 
   // Parse config file
@@ -46,12 +48,16 @@ func main() {
   db := models.InitDb(databasePath)
   defer db.Db.Close()
 
-  if *userFlag {
-    // Start CLI to create new user account
-    addUser()
+  if *testFlag {
+    tests.TestServer("http://localhost:8080")
   } else {
-    // Start server
-    server(port)
+    if *userFlag {
+      // Start CLI to create new user account
+      addUser()
+    } else {
+      // Start server
+      server(port)
+    }
   }
 }
 
@@ -66,7 +72,8 @@ func server(port string) {
   admin := mux.NewRouter()
 
   // Releases API
-  r.HandleFunc("/", controllers.Releases)
+  r.HandleFunc("/", controllers.Releases).Methods("GET")
+  r.HandleFunc("/", controllers.PostReleasesJSON).Methods("POST")
   r.HandleFunc("/releases.json", controllers.ReleasesJSON)
 
   // Authentication
@@ -76,7 +83,7 @@ func server(port string) {
 
   // Releases
   admin.HandleFunc("/admin/releases", controllers.Releases)
-  admin.HandleFunc("/admin/releases/{id}", controllers.ShowReleases)
+  admin.HandleFunc("/admin/releases/show/{id}", controllers.ShowReleases)
   admin.HandleFunc("/admin/releases/edit{id}", controllers.EditReleases)
   admin.HandleFunc("/admin/releases/update", controllers.UpdateReleases)
   admin.HandleFunc("/admin/releases/new", controllers.NewReleases)

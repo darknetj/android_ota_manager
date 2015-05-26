@@ -60,7 +60,7 @@ func NewReleases(w http.ResponseWriter, r *http.Request) {
          "release": models.NewRelease(),
          "files": models.Files(),
          "title": "New Release",
-         "endpoint": "/releases/create",
+         "endpoint": "/admin/releases/create",
     }
     R.HTML(w, http.StatusOK, "releases_form", data)
 }

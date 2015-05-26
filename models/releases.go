@@ -18,12 +18,12 @@ type Release struct {
     Changelog   string
 }
 
-func (r *Release) Url() string {
+func (r Release) DownloadUrl() string {
     url := fmt.Sprintf("https://builds.copperhead.co/builds/%s", r.Filename)
     return url
 }
 
-func (r *Release) ChangelogUrl() string {
+func (r Release) ChangelogUrl() string {
     url := fmt.Sprintf("https://builds.copperhead.co/changelog/%s.txt", r.VersionNo)
     return url
 }
@@ -86,7 +86,7 @@ func ReleasesListJSON() []map[string]string {
     for _, r := range releases {
         newRelease := map[string]string{
             "filename": r.Filename,
-            "url": r.Url(),
+            "url": r.DownloadUrl(),
             "changes": r.ChangelogUrl(),
             "md5sum": r.Md5sum,
             "api_level": r.ApiLevel,
