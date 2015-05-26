@@ -93,6 +93,7 @@ func server(port string, templates string) {
   // Files
   admin.HandleFunc("/admin/files", controllers.Files)
   admin.HandleFunc("/admin/files/delete", controllers.DeleteFiles)
+  admin.HandleFunc("/admin/files/refresh", controllers.RefreshFiles)
 
   // Users
   admin.HandleFunc("/admin/users", controllers.Users)
