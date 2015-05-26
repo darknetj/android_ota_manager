@@ -21,7 +21,6 @@ func InitMiddleware(templates string) {
   // Init cookie store
   ota_key := os.Getenv("OTA_COOKIE_KEY")
   CookieStore = sessions.NewCookieStore([]byte(ota_key))
-  BuildsPath = builds
 
   // Init renderer
   R = render.New(render.Options{

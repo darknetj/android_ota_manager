@@ -90,7 +90,8 @@ func ReleasesListJSON() []map[string]string {
             "changes": r.ChangelogUrl(),
             "md5sum": r.Md5sum,
             "api_level": r.ApiLevel,
-            "timestamp": string(r.BuildDate),
+            //"timestamp": string(r.BuildDate),
+            "timestamp": time.Now().Format("20060102150405"),
             "channel": r.Channel,
             "incremental": r.VersionNo,
         }
