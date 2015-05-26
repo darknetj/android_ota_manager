@@ -2,12 +2,12 @@ development:
   port: 8080
   directory: ./
   database: ./ota.sql
-  assets: ./assets
   builds: ./builds
+  templates: ./views
 
 production:
   port: 8080
-  directory: /var/lib/ota_server
-  database: /var/lib/ota_server/ota.sql
-  assets: /var/lib/ota_server/assets
-  builds: /var/lib/ota_server/builds
+  directory: /var/lib/android_ota_server
+  database: /var/lib/android_ota_server/ota.sql
+  builds: /var/lib/android_ota_server/builds
+  templates: /var/lib/android_ota_server/views

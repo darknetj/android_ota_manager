@@ -9,7 +9,6 @@ import (
   "fmt"
   "os"
   "strings"
-//  "net/http"
   "gopkg.in/gorp.v1"
   _ "github.com/mattn/go-sqlite3"
   "github.com/olebedev/config"
@@ -41,6 +40,7 @@ func main() {
   cfg,err = cfg.Get(*env)
   port,_ := cfg.String("port")
   development = strings.Contains(*env, "development")
+  templates,_ := cfg.String("templates")
   lib.CheckErr(err, "Config parsing failed")
 
   // Connect to database
@@ -56,16 +56,16 @@ func main() {
       addUser()
     } else {
       // Start server
-      server(port)
+      server(port, templates)
     }
   }
 }
 
-func server(port string) {
+func server(port string, templates string) {
   log.Println("--- Started Copperhead OTA Server on port", port, "---")
 
   // Create auth cookie store
-  controllers.InitMiddleware()
+  controllers.InitMiddleware(templates)
 
   // Create router
   r := mux.NewRouter()

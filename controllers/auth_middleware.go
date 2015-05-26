@@ -13,16 +13,17 @@ import (
 var (
   CookieStore sessions.Store
   R *render.Render
+  TemplatesPath string
 )
 
-func InitMiddleware() {
+func InitMiddleware(templates string) {
   // Init cookie store
   ota_key := os.Getenv("OTA_COOKIE_KEY")
   CookieStore = sessions.NewCookieStore([]byte(ota_key))
 
   // Init renderer
   R = render.New(render.Options{
-    Directory: "views",
+    Directory: templates,
     Layout: "layout",
     Extensions: []string{".html"},
     IndentJSON: true,
