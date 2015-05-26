@@ -106,7 +106,8 @@ func server(port string, templates string) {
     ContentTypeNosniff: true,
     BrowserXssFilter: true,
     ContentSecurityPolicy: "default-src 'self'; style-src 'self' https://maxcdn.bootstrapcdn.com; font-src https://maxcdn.bootstrapcdn.com;",
-    IsDevelopment: development,
+    //IsDevelopment: development,
+    IsDevelopment: true,
   })
 
   // Create a new negroni for the admin middleware
