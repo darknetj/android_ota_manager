@@ -28,3 +28,9 @@ Routes:
     /releases  = Publish builds by creating a Release containing a filename, version number, release notes, etc
     /users     = List of admin users (read only)
     /logout
+
+Uploading a file:
+
+I recommend using rsync over SSH to upload files:
+
+    rsync -zv builds/* server:/var/lib/android_ota_server/builds

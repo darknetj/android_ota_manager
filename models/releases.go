@@ -18,7 +18,7 @@ func NewRelease() Release {
     release := Release{
         Id: 0,
         Created: time.Now().UnixNano(),
-        Changelog: "Release Notes for Copperhead 0.0.1\n---\n- Add notes here...",
+        Changelog: "- Add bullet point here\n- Another bullet...",
     }
     return release
 }

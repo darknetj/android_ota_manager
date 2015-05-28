@@ -4,6 +4,7 @@ import (
     "log"
     "fmt"
     "strconv"
+    "strings"
     "net/http"
     "github.com/gorilla/mux"
     "github.com/copperhead-security/android_ota_server/models"
@@ -31,7 +32,8 @@ func ChangelogFiles(w http.ResponseWriter, r *http.Request) {
     lib.CheckErr(err, "Find by incremental failed")
     log.Println(file.Id)
     release := models.FindReleaseByFile(file)
-    fmt.Fprintf(w, release.Changelog)
+    changelog := strings.Join([]string{"Release notes for Copperhead OS #", file.Incremental, "\n---\n", release.Changelog}, "")
+    fmt.Fprintf(w, changelog)
 }
 
 // GET /files/show/:id
