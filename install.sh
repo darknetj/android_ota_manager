@@ -15,6 +15,8 @@ echo "> Copying static assets to $appPath"
 cp -rf ./views $appPath/views
 cp -f ./config.yml $appPath/config.yml
 mkdir $appPath/builds
+mkdir $appPath/builds/deleted
+mkdir $appPath/builds/published
 echo "> Installing systemd service"
 cp android_ota_server.service /usr/lib/systemd/system/android_ota_server.service
 systemctl enable android_ota_server.service

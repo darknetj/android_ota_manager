@@ -4,29 +4,17 @@
 <div class="form-group">
   <label for="Filename">
     Build file (zip files uploaded to /builds directory) 
-    <a href='/admin/files/'>Manage Files</a>
+    <a href='/admin/files'>Manage Files</a>
   </label>
-  <select name='Filename' class='form-control'>
+  <select name='FileId' class='form-control'>
     {{range .files }}
-      <option value='{{ .Name }}'>{{ .Name }}</option>
+      <option value='{{ .Id }}'>{{ .Name }}</option>
     {{ end }}
   </select>
 </div>
 {{with .release }}
   <div class="form-group">
-    <label for="VersionNo">Version of Release</label>
-    <input type="text" class="form-control" name="VersionNo" placeholder="0.0.1" value="{{ .VersionNo }}">
-  </div>
-  <div class="form-group">
-    <label for="VersionNo">Build date (Unix timestamp)</label>
-    <input type="text" class="form-control" name="BuildDate" placeholder="Build BuildDate" value="{{ .BuildDate }}">
-  </div>
-  <div class="form-group">
-    <label for="ApiLevel">API Level</label>
-    <input type="text" class="form-control" name="ApiLevel" placeholder="21" value="{{ .ApiLevel }}">
-  </div>
-  <div class="form-group">
-    <label for="Channel">Version of Release</label>
+    <label for="Channel">Channel</label>
     <select name='Channel' class='form-control'>
       <option value='TESTING'>TESTING</option>
       <option value='NIGHTLY'>NIGHTLY</option>
@@ -38,5 +26,5 @@
     <textarea rows='10' cols='50' name='Changelog' class='form-control'>{{ .Changelog }}</textarea>
   </div>
   {{ end }}
-  <button type="submit" class="btn btn-default">Save</button>
+  <button type="submit" class="btn btn-default">Publish</button>
 </form>

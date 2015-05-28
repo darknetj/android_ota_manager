@@ -40,14 +40,12 @@ func AuthMiddleware() negroni.HandlerFunc {
     if err != nil {
       log.Println("Error parsing auth cookie", err)
     }
-    var user models.User
     user_id := session.Values["userid"]
     if user_id != nil {
-      user, err = models.FindUser(user_id.(int64))
+      _, err = models.FindUser(user_id.(int64))
       if err != nil {
           http.Redirect(w, r, "/login", http.StatusFound)
       } else {
-          log.Println(user)
           next(w, r)
       }
     } else {

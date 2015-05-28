@@ -12,8 +12,7 @@ import (
 func Users(w http.ResponseWriter, r *http.Request) {
     users := models.UserList()
     var userStrings []map[string]string
-    for index, user := range users {
-      log.Println(index, user)
+    for _, user := range users {
       userStrings = append(userStrings, map[string]string{
         "Id": strconv.FormatInt(user.Id, 10),
         "Username": user.Username,
@@ -21,7 +20,6 @@ func Users(w http.ResponseWriter, r *http.Request) {
       })
     }
     data := map[string][]models.User { "users": models.UserList()}
-    log.Println(data)
     R.HTML(w, http.StatusOK, "users", data)
 }
 
@@ -34,8 +32,6 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 
     user, err := models.FindUserByUsername(username)
     if err == nil {
-        log.Println(user)
-        log.Println(user.Password)
         err = scrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
         if err == nil {
             session.Values["userid"] = user.Id

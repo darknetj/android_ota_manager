@@ -1,7 +1,6 @@
 package controllers
 
 import (
-    "fmt"
     "strconv"
     "net/http"
     "github.com/gorilla/mux"
@@ -10,7 +9,7 @@ import (
 
 // GET /files
 func Files(w http.ResponseWriter, r *http.Request) {
-    data := map[string]interface{} {"files": models.Files()}
+    data := map[string]interface{} {"files": models.FilesIndex()}
     R.HTML(w, http.StatusOK, "files", data)
 }
 
@@ -25,17 +24,19 @@ func ShowFiles(w http.ResponseWriter, r *http.Request) {
 
 // GET /files/refresh
 func RefreshFiles(w http.ResponseWriter, r *http.Request) {
-    models.ProcessFiles()
+    models.RefreshBuilds()
     http.Redirect(w, r, "/admin/files", http.StatusFound)
 }
 
 // POST /files/delete
 func DeleteFiles(w http.ResponseWriter, r *http.Request) {
     r.ParseForm();
-    buildName := r.FormValue("buildName")
+    id,_ := strconv.ParseInt(r.FormValue("Id"),10,64)
+    file := models.FindFile(id)
 
+    // Delete from DB
+    models.DeleteFile(file)
     // TODO: mv file to /builds/deleted directory
 
-    url := fmt.Sprintf("/admin/files?%s", buildName)
-    http.Redirect(w, r, url, http.StatusFound)
+    http.Redirect(w, r, "/admin/files", http.StatusFound)
 }

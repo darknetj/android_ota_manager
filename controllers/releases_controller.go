@@ -48,42 +48,56 @@ func PostReleasesJSON(w http.ResponseWriter, r *http.Request) {
 
 // GET /releases
 func Releases(w http.ResponseWriter, r *http.Request) {
+    session, _ := CookieStore.Get(r, "auth")
     data := map[string]interface{} {
       "releases": models.ReleasesIndex(),
+      "flashes": session.Flashes(),
     }
+    session.Save(r, w)
     R.HTML(w, http.StatusOK, "releases", data)
 }
 
 // GET /releases/new
 func NewReleases(w http.ResponseWriter, r *http.Request) {
-    data := map[string]interface{} {
-         "release": models.NewRelease(),
-         "files": models.Files(),
-         "title": "New Release",
-         "endpoint": "/admin/releases/create",
+    files := models.Files()
+        log.Println(files)
+    if (len(files) > 0) {
+        data := map[string]interface{} {
+             "release": models.NewRelease(),
+             "files": files,
+             "title": "New Release",
+             "endpoint": "/admin/releases/create",
+        }
+        R.HTML(w, http.StatusOK, "releases_form", data)
+    } else {
+        session, _ := CookieStore.Get(r, "auth")
+        session.AddFlash("No files available to create a new release. Upload a build image first.")
+        session.Save(r, w)
+        http.Redirect(w, r, "/admin/releases", http.StatusFound)
     }
-    R.HTML(w, http.StatusOK, "releases_form", data)
 }
 
 // POST /releases/create
 func CreateReleases(w http.ResponseWriter, r *http.Request) {
     r.ParseForm();
+    fileId,_ := strconv.ParseInt(r.FormValue("FileId"),10,64)
+    log.Println(fileId)
+    file := models.FindFile(fileId)
 
     // Generate release
     release := models.Release{
         Created: time.Now().UnixNano(),
-        VersionNo: r.FormValue("VersionNo"),
-        ApiLevel: r.FormValue("ApiLevel"),
-        Channel: r.FormValue("Channel"),
-        Filename: r.FormValue("Filename"),
-        Md5sum: "x3u3j3j3j",
         Changelog: r.FormValue("Changelog"),
+        Channel: r.FormValue("Channel"),
+        FileId: file.Id,
+        FileName: file.Name,
     }
 
     models.CreateRelease(release)
+    models.PublishFile(file)
+    go models.RefreshBuilds()
 
-    url := fmt.Sprintf("/admin/releases")
-    http.Redirect(w, r, url, http.StatusFound)
+    http.Redirect(w, r, "/admin/releases", http.StatusFound)
 }
 
 // GET /releases/show/:id
@@ -115,12 +129,13 @@ func UpdateReleases(w http.ResponseWriter, r *http.Request) {
 
     // Parse form and append to struct
     id,_ := strconv.ParseInt(r.FormValue("Id"),10,64)
-    log.Println(id)
+    fileId,_ := strconv.ParseInt(r.FormValue("FileId"),10,64)
     release := models.FindRelease(id)
-    release.VersionNo = r.FormValue("VersionNo")
-    release.ApiLevel = r.FormValue("ApiLevel")
+    file := models.FindFile(fileId)
+    release.FileId = file.Id
+    release.FileName = file.Name
     release.Channel = r.FormValue("Channel")
-    release.Filename = r.FormValue("Filename")
+    release.Changelog = r.FormValue("Changelog")
 
     // Append to db
     models.UpdateRelease(release)
@@ -135,10 +150,12 @@ func DeleteReleases(w http.ResponseWriter, r *http.Request) {
     r.ParseForm();
     id,_ := strconv.ParseInt(r.FormValue("Id"),10,64)
     release := models.FindRelease(id)
+    file := models.FindFile(release.FileId)
 
     // Delete from DB
     models.DeleteRelease(release)
+    models.UnpublishFile(file)
+    go models.RefreshBuilds()
 
-    url := fmt.Sprintf("/admin/releases")
-    http.Redirect(w, r, url, http.StatusFound)
+    http.Redirect(w, r, "/admin/releases", http.StatusFound)
 }

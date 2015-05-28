@@ -47,7 +47,7 @@ func main() {
   // Connect to database
   databasePath,_ := cfg.String("database")
   db := models.InitDb(databasePath, builds)
-  models.ProcessFiles()
+  go models.RefreshBuilds()
   defer db.Db.Close()
 
   if *testFlag {
@@ -84,7 +84,7 @@ func server(port string, templates string) {
   // Releases
   admin.HandleFunc("/admin/releases", controllers.Releases)
   admin.HandleFunc("/admin/releases/show/{id}", controllers.ShowReleases)
-  admin.HandleFunc("/admin/releases/edit{id}", controllers.EditReleases)
+  admin.HandleFunc("/admin/releases/edit/{id}", controllers.EditReleases)
   admin.HandleFunc("/admin/releases/update", controllers.UpdateReleases)
   admin.HandleFunc("/admin/releases/new", controllers.NewReleases)
   admin.HandleFunc("/admin/releases/create", controllers.CreateReleases)
@@ -92,7 +92,7 @@ func server(port string, templates string) {
 
   // Files
   admin.HandleFunc("/admin/files", controllers.Files)
-  admin.HandleFunc("/admin/files/show/{ id }", controllers.ShowFiles)
+  admin.HandleFunc("/admin/files/show/{id}", controllers.ShowFiles)
   admin.HandleFunc("/admin/files/delete", controllers.DeleteFiles)
   admin.HandleFunc("/admin/files/refresh", controllers.RefreshFiles)
 

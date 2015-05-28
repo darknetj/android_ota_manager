@@ -15,27 +15,47 @@ import (
     "github.com/copperhead-security/android_ota_server/lib"
 )
 
-var buildFiles []File
-
 type File struct {
-    Name string
-    Size int64
-    Md5 string
-    BuildDate string
-    ApiLevel string
+    Id          int64 `db:"file_id"`
+    Created     int64
+    Name        string
+    Size        int64
+    Md5         string
+    BuildDate   string
+    ApiLevel    string
     Incremental string
-    Device string
-    User string
+    Device      string
+    User        string
+    Published   bool `db:published`
 }
 
-func (b *File) DownloadUrl() string {
-    url := fmt.Sprintf("https://builds.copperhead.co/downloads/%s", b.Name)
+func (b File) DownloadUrl() string {
+    url := fmt.Sprintf("https://builds.copperhead.co/builds/%s", b.Name)
     return url
 }
 
-func (b *File) DeleteUrl() string {
+func (b File) ChangelogUrl() string {
+    url := fmt.Sprintf("https://builds.copperhead.co/changelog/%s.txt", b.Incremental)
+    return url
+}
+
+func (b File) DeleteUrl() string {
     url := fmt.Sprintf("https://builds.copperhead.co/build/%s/delete", b.Name)
     return url
+}
+
+func Files() []File {
+    var files []File
+    _, err := dbmap.Select(&files, "select * from files where published=0")
+    lib.CheckErr(err, "Select all files failed")
+    return files
+}
+
+func FilesIndex() []File {
+    var files []File
+    _, err := dbmap.Select(&files, "select * from files order by file_id DESC")
+    lib.CheckErr(err, "Select all files failed")
+    return files
 }
 
 func FindFile(id int64) File {
@@ -45,29 +65,76 @@ func FindFile(id int64) File {
     return file
 }
 
-func Files() []File {
-    /* files, _ := ioutil.ReadDir(BuildsPath) */
-    buildFiles := make([]File, 0)
-    // for _, f := range files {
-    //     file := File{f.Name(), f.Size()}
-    //     if strings.Contains(f.Name(), "zip") {
-    //         buildFiles = append(buildFiles, file)
-    //     }
-    //     fmt.Println(file)
-    // }
-    // fmt.Println(buildFiles)
-    return buildFiles
+func FindFileByName(name string) (File, error) {
+    var file File
+    err := dbmap.SelectOne(&file, "select * from files where name=?", name)
+    return file, err
 }
 
-func ProcessFiles() {
-    var fileList []File
+func CreateFile(file File) {
+    err := dbmap.Insert(&file)
+    lib.CheckErr(err, "Insert file failed")
+}
+
+func UpdateFile(file File) {
+    _, err := dbmap.Update(&file)
+    lib.CheckErr(err, "Update file failed")
+}
+
+func DeleteFile(file File) {
+    _, err := dbmap.Delete(&file)
+    lib.CheckErr(err, "Delete file failed")
+    filePath := strings.Join([]string{BuildsPath, file.Name}, "/")
+    if _, err := os.Stat(filePath); err == nil {
+        deletedPath := strings.Join([]string{BuildsPath, "deleted", file.Name}, "/")
+        err = os.Rename(filePath, deletedPath)
+        lib.CheckErr(err, "Move file to deleted directory failed")
+    }
+}
+
+func PublishFile(file File) {
+    filePath := strings.Join([]string{BuildsPath, file.Name}, "/")
+    publishPath := strings.Join([]string{BuildsPath, "published", file.Name}, "/")
+    if _, err := os.Stat(filePath); err == nil {
+        // mv to /builds/production
+        err := os.Rename(filePath, publishPath)
+        lib.CheckErr(err, "Move file to published directory failed")
+        // make read-only
+        err = os.Chmod(publishPath, 0444)
+        lib.CheckErr(err, "Chmod file to read-only failed")
+    }
+}
+
+func UnpublishFile(file File) {
+    filePath := strings.Join([]string{BuildsPath, file.Name}, "/")
+    publishPath := strings.Join([]string{BuildsPath, "published", file.Name}, "/")
+    if _, err := os.Stat(publishPath); err == nil {
+        // make writeable
+        err := os.Chmod(publishPath, 0777)
+        lib.CheckErr(err, "Chmod file to writeable failed")
+        // mv to /builds/production
+        err = os.Rename(publishPath, filePath)
+        lib.CheckErr(err, "Move file to builds directory failed")
+    }
+}
+
+func RefreshBuilds() {
+    log.Println("Processing files...")
+
+    // Remove any missing files from the DB
+    PruneMissingFiles()
+
+    // Check for files in build directory that match zip MIME
     mm,_ := magicmime.New(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR)
     files, _ := ioutil.ReadDir(BuildsPath)
     for _, f := range files {
         filepath := strings.Join([]string{BuildsPath, f.Name()}, "/")
         mimetype,_ := mm.TypeByFile(filepath)
         if mimetype == "application/java-archive" {
+            // Extract build props from file in zip
             props := BuildPropsFromZip(filepath)
+
+            // Generate file struct using properties
             file := File{
                 Name: f.Name(),
                 Size: f.Size(),
@@ -77,24 +144,49 @@ func ProcessFiles() {
                 Incremental: props["ro.build.version.incremental"],
                 Device: props["ro.product.name"],
                 User: props["ro.build.user"],
+                Published: false,
             }
-            fileList = append(fileList, file)
+
+            // Insert file in database
+            _, err := FindFileByName(file.Name)
+            if err != nil {
+              CreateFile(file)
+            } else {
+              UpdateFile(file)
+            }
         } else {
             log.Println("File skipped", mimetype)
         }
     }
-    buildFiles = fileList
-    log.Println(buildFiles)
-    // TODO: Prune DB for old files
-    // loop through each in db
-    // check if file still exists, if not delete from db
+
+    // Update db published flag for files in published folder
+    publishedPath := strings.Join([]string{BuildsPath, "published"}, "/")
+    publishedFiles, _ := ioutil.ReadDir(publishedPath)
+    for _, f := range publishedFiles {
+        file,_ := FindFileByName(f.Name())
+        file.Published = true
+        UpdateFile(file)
+    }
+}
+
+func PruneMissingFiles() {
+    for _, f := range Files() {
+      filePath := strings.Join([]string{BuildsPath, f.Name}, "/")
+      publishedPath := strings.Join([]string{BuildsPath, "published", f.Name}, "/")
+      if _, err := os.Stat(filePath); os.IsNotExist(err) {
+        if _, err := os.Stat(publishedPath); os.IsNotExist(err) {
+            fmt.Printf("No such file: %s", filePath)
+            DeleteFile(f)
+        }
+      }
+    }
 }
 
 func Md5File(filepath string) string {
-	h, _ := os.Open(filepath)
-	buf := md5.New()
-	io.Copy(buf, h)
-  return hex.EncodeToString(buf.Sum(nil))
+    h, _ := os.Open(filepath)
+    buf := md5.New()
+    io.Copy(buf, h)
+    return hex.EncodeToString(buf.Sum(nil))
 }
 
 func BuildPropsFromZip(filepath string) map[string]string {

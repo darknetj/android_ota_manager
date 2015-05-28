@@ -2,23 +2,23 @@
 <h1>Releases</h1>
 <table class='table'>
   <tr>
-    <th>Version</th>
-    <th>Filename</th>
+    <th>Created at</th>
+    <th>File</th>
     <th>Channel</th>
     <th>Published</th>
-    <th>Download</th>
+    <th>Changelog</th>
     <th colspan='2'>Actions</th>
   </tr>
 
   {{range .releases }}
     <tr>
-      <td><a href='/admin/releases/show/{{ .Id }}'>{{ .VersionNo }}</a></td>
-      <td>{{ .Filename }}</td>
+      <td>{{ .Created }}</td>
+      <td><a href='/admin/files/show/{{ .FileId }}'>{{ .FileName }}</a></td>
       <td>{{ .Channel }}</td>
       <td>
         Yes
       </td>
-      <td><a href='{{ .DownloadUrl }}'>Download</a></td>
+      <td><a href='/admin/releases/changelog/{{ .Id }}'>Changelog</a></td>
       <td><a href='/admin/releases/edit/{{ .Id }}'>Edit</a></td>
       <td>
         <form action="/admin/releases/delete" method="post">
