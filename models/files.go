@@ -34,6 +34,11 @@ func (b File) DownloadUrl() string {
     return url
 }
 
+func (b File) DownloadPath() string {
+    url := fmt.Sprintf("%s/published/%s", BuildsPath, b.Name)
+    return url
+}
+
 func (b File) ChangelogUrl() string {
     url := fmt.Sprintf("https://builds.copperhead.co/changelog/%s.txt", b.Incremental)
     return url
@@ -68,6 +73,12 @@ func FindFile(id int64) File {
 func FindFileByName(name string) (File, error) {
     var file File
     err := dbmap.SelectOne(&file, "select * from files where name=?", name)
+    return file, err
+}
+
+func FindFileByIncremental(incremental string) (File, error) {
+    var file File
+    err := dbmap.SelectOne(&file, "select * from files where incremental=? LIMIT 1", incremental)
     return file, err
 }
 

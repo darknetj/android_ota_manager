@@ -45,6 +45,13 @@ func FindRelease(id int64) Release {
     return release
 }
 
+func FindReleaseByFile(file File) Release {
+    var release Release
+    err := dbmap.SelectOne(&release, "select * from releases where FileId=?", file.Id)
+    lib.CheckErr(err, "Find release by file failed")
+    return release
+}
+
 func ReleasesIndex() []Release {
     var releases []Release
     _, err := dbmap.Select(&releases, "select * from releases order by release_id DESC")

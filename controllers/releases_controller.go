@@ -1,6 +1,7 @@
 package controllers
 
 import (
+    "fmt"
     "strconv"
     "time"
     "net/http"
@@ -136,4 +137,14 @@ func DeleteReleases(w http.ResponseWriter, r *http.Request) {
     go models.RefreshBuilds()
 
     http.Redirect(w, r, "/admin/releases", http.StatusFound)
+}
+
+// POST /releases/changelog/{id}
+func ChangelogReleases(w http.ResponseWriter, r *http.Request) {
+    vars := mux.Vars(r)
+    id,_ := strconv.ParseInt(vars["id"],10,64)
+    release := models.FindRelease(id)
+    file := models.FindFile(release.FileId)
+    url := fmt.Sprintf("/changelog/%s.txt", file.Incremental)
+    http.Redirect(w, r, url, http.StatusFound)
 }

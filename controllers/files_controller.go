@@ -1,16 +1,37 @@
 package controllers
 
 import (
+    "log"
+    "fmt"
     "strconv"
     "net/http"
     "github.com/gorilla/mux"
     "github.com/copperhead-security/android_ota_server/models"
+    "github.com/copperhead-security/android_ota_server/lib"
 )
 
 // GET /files
 func Files(w http.ResponseWriter, r *http.Request) {
     data := map[string]interface{} {"files": models.FilesIndex()}
     R.HTML(w, http.StatusOK, "files", data)
+}
+
+// GET /builds/{name}
+func DownloadFiles(w http.ResponseWriter, r *http.Request) {
+    vars := mux.Vars(r)
+    file,_ := models.FindFileByName(vars["name"])
+    http.ServeFile(w, r, file.DownloadPath())
+}
+
+// GET /changelog/{incremental}.txt
+func ChangelogFiles(w http.ResponseWriter, r *http.Request) {
+    vars := mux.Vars(r)
+    log.Println(vars["incremental"])
+    file,err := models.FindFileByIncremental(vars["incremental"])
+    lib.CheckErr(err, "Find by incremental failed")
+    log.Println(file.Id)
+    release := models.FindReleaseByFile(file)
+    fmt.Fprintf(w, release.Changelog)
 }
 
 // GET /files/show/:id

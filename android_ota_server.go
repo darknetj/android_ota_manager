@@ -75,6 +75,8 @@ func server(port string, templates string) {
   r.HandleFunc("/", controllers.ReleasesJSON).Methods("GET")
   r.HandleFunc("/", controllers.PostReleasesJSON).Methods("POST")
   r.HandleFunc("/releases.json", controllers.ReleasesJSON)
+  r.HandleFunc("/changelog/{incremental}.txt", controllers.ChangelogFiles)
+  r.HandleFunc("/builds/{name}", controllers.DownloadFiles)
 
   // Authentication
   r.HandleFunc("/login", controllers.Login)
@@ -88,6 +90,7 @@ func server(port string, templates string) {
   admin.HandleFunc("/admin/releases/new", controllers.NewReleases)
   admin.HandleFunc("/admin/releases/create", controllers.CreateReleases)
   admin.HandleFunc("/admin/releases/delete", controllers.DeleteReleases)
+  admin.HandleFunc("/admin/releases/changelog/{id}", controllers.ChangelogReleases)
 
   // Files
   admin.HandleFunc("/admin/files", controllers.Files)
