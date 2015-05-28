@@ -2,7 +2,9 @@ package controllers
 
 import (
     "fmt"
+    "strconv"
     "net/http"
+    "github.com/gorilla/mux"
     "github.com/copperhead-security/android_ota_server/models"
 )
 
@@ -10,6 +12,15 @@ import (
 func Files(w http.ResponseWriter, r *http.Request) {
     data := map[string]interface{} {"files": models.Files()}
     R.HTML(w, http.StatusOK, "files", data)
+}
+
+// GET /files/show/:id
+func ShowFiles(w http.ResponseWriter, r *http.Request) {
+    vars := mux.Vars(r)
+    id,_ := strconv.ParseInt(vars["id"],10,64)
+    file := models.FindFile(id)
+    data := map[string]interface{} {"file": file}
+    R.HTML(w, http.StatusOK, "files_show", data)
 }
 
 // GET /files/refresh

@@ -12,6 +12,7 @@ import (
     "io/ioutil"
     "archive/zip"
     "github.com/rakyll/magicmime"
+    "github.com/copperhead-security/android_ota_server/lib"
 )
 
 var buildFiles []File
@@ -35,6 +36,13 @@ func (b *File) DownloadUrl() string {
 func (b *File) DeleteUrl() string {
     url := fmt.Sprintf("https://builds.copperhead.co/build/%s/delete", b.Name)
     return url
+}
+
+func FindFile(id int64) File {
+    var file File
+    err := dbmap.SelectOne(&file, "select * from files where file_id=?", id)
+    lib.CheckErr(err, "Find file failed")
+    return file
 }
 
 func Files() []File {
