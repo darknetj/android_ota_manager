@@ -26,7 +26,7 @@ type File struct {
     Incremental string
     Device      string
     User        string
-    Published   bool `db:published`
+    Published   bool
 }
 
 func (b File) DownloadUrl() string {
@@ -131,31 +131,33 @@ func RefreshBuilds() {
         filepath := strings.Join([]string{BuildsPath, f.Name()}, "/")
         mimetype,_ := mm.TypeByFile(filepath)
         if mimetype == "application/java-archive" {
-            // Extract build props from file in zip
-            props := BuildPropsFromZip(filepath)
-
-            // Generate file struct using properties
-            file := File{
-                Name: f.Name(),
-                Size: f.Size(),
-                Md5: Md5File(filepath),
-                BuildDate: props["ro.build.date.utc"],
-                ApiLevel: props["ro.build.version.sdk"],
-                Incremental: props["ro.build.version.incremental"],
-                Device: props["ro.product.name"],
-                User: props["ro.build.user"],
-                Published: false,
-            }
-
-            // Insert file in database
-            _, err := FindFileByName(file.Name)
+            existingFile, err := FindFileByName(f.Name())
             if err != nil {
-              CreateFile(file)
+                // Extract build props from file in zip
+                props := BuildPropsFromZip(filepath)
+
+                // Generate file struct using properties
+                file := File{
+                    Name: f.Name(),
+                    Size: f.Size(),
+                    Md5: Md5File(filepath),
+                    BuildDate: props["ro.build.date.utc"],
+                    ApiLevel: props["ro.build.version.sdk"],
+                    Incremental: props["ro.build.version.incremental"],
+                    Device: props["ro.product.name"],
+                    User: props["ro.build.user"],
+                    Published: false,
+                }
+                // Insert file in database
+                CreateFile(file)
             } else {
-              UpdateFile(file)
+                // Insert file in database
+                existingFile.Published = false
+                UpdateFile(existingFile)
+                log.Println("Refresh Builds: File exists, skipping")
             }
         } else {
-            log.Println("File skipped", mimetype)
+            log.Println("Refresh Builds: File skipped invalid MIME", mimetype)
         }
     }
 

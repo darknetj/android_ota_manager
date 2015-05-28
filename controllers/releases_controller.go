@@ -60,7 +60,6 @@ func Releases(w http.ResponseWriter, r *http.Request) {
 // GET /releases/new
 func NewReleases(w http.ResponseWriter, r *http.Request) {
     files := models.Files()
-        log.Println(files)
     if (len(files) > 0) {
         data := map[string]interface{} {
              "release": models.NewRelease(),

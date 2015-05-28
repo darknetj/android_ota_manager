@@ -36,7 +36,6 @@ func DeleteFiles(w http.ResponseWriter, r *http.Request) {
 
     // Delete from DB
     models.DeleteFile(file)
-    // TODO: mv file to /builds/deleted directory
 
     http.Redirect(w, r, "/admin/files", http.StatusFound)
 }
