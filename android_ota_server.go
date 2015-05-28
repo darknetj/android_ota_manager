@@ -83,7 +83,6 @@ func server(port string, templates string) {
 
   // Releases
   admin.HandleFunc("/admin/releases", controllers.Releases)
-  admin.HandleFunc("/admin/releases/show/{id}", controllers.ShowReleases)
   admin.HandleFunc("/admin/releases/edit/{id}", controllers.EditReleases)
   admin.HandleFunc("/admin/releases/update", controllers.UpdateReleases)
   admin.HandleFunc("/admin/releases/new", controllers.NewReleases)

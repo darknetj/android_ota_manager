@@ -1,8 +1,6 @@
 package controllers
 
 import (
-    "fmt"
-    "log"
     "strconv"
     "time"
     "net/http"
@@ -26,14 +24,6 @@ func ReleasesJSON(w http.ResponseWriter, r *http.Request) {
 // POST /releases.json
 func PostReleasesJSON(w http.ResponseWriter, r *http.Request) {
     r.ParseForm();
-
-    // Print form values
-    fmt.Printf("%+v\n", r.Form)
-    for key, values := range r.Form {
-       for _, value := range values {
-            fmt.Println(key, value)
-       }
-    }
 
     // Prep JSON data
     data := map[string]interface{} {
@@ -80,7 +70,6 @@ func NewReleases(w http.ResponseWriter, r *http.Request) {
 func CreateReleases(w http.ResponseWriter, r *http.Request) {
     r.ParseForm();
     fileId,_ := strconv.ParseInt(r.FormValue("FileId"),10,64)
-    log.Println(fileId)
     file := models.FindFile(fileId)
 
     // Generate release
@@ -99,15 +88,6 @@ func CreateReleases(w http.ResponseWriter, r *http.Request) {
     http.Redirect(w, r, "/admin/releases", http.StatusFound)
 }
 
-// GET /releases/show/:id
-func ShowReleases(w http.ResponseWriter, r *http.Request) {
-    vars := mux.Vars(r)
-    id,_ := strconv.ParseInt(vars["id"],10,64)
-    release := models.FindRelease(id)
-    data := map[string]interface{} {"release": release}
-    R.HTML(w, http.StatusOK, "releases_show", data)
-}
-
 // POST /releases/edit/:id
 func EditReleases(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
@@ -115,7 +95,7 @@ func EditReleases(w http.ResponseWriter, r *http.Request) {
     release := models.FindRelease(id)
     data := map[string]interface{} {
             "release": release,
-            "files": models.Files(),
+            "files": models.FilesIndex(),
             "title": "Edit Release",
             "endpoint": "/admin/releases/update",
     }
@@ -140,8 +120,7 @@ func UpdateReleases(w http.ResponseWriter, r *http.Request) {
     models.UpdateRelease(release)
 
     // Redirect
-    url := fmt.Sprintf("/admin/releases/show/%i", id)
-    http.Redirect(w, r, url, http.StatusFound)
+    http.Redirect(w, r, "/admin/releases", http.StatusFound)
 }
 
 // POST /releases/delete
