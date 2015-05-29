@@ -74,9 +74,10 @@ func server(port string, templates string) {
   // Releases API
   r.HandleFunc("/", controllers.ReleasesJSON).Methods("GET")
   r.HandleFunc("/", controllers.PostReleasesJSON).Methods("POST")
-  r.HandleFunc("/releases.json", controllers.ReleasesJSON)
-  r.HandleFunc("/changelog/{incremental}.txt", controllers.ChangelogFiles)
-  r.HandleFunc("/builds/{name}", controllers.DownloadFiles)
+  r.HandleFunc("/releases.json", controllers.ReleasesJSON).Methods("GET")
+  r.HandleFunc("/changelog/{incremental}.txt", controllers.ChangelogFiles).Methods("GET")
+  r.HandleFunc("/builds/{name}", controllers.DownloadFiles).Methods("GET")
+  r.HandleFunc("/v1/build/get_delta", controllers.GetDeltaReleases)
 
   // Authentication
   r.HandleFunc("/login", controllers.Login)

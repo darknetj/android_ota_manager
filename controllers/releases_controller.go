@@ -148,3 +148,9 @@ func ChangelogReleases(w http.ResponseWriter, r *http.Request) {
     url := fmt.Sprintf("/changelog/%s.txt", file.Incremental)
     http.Redirect(w, r, url, http.StatusFound)
 }
+
+// POST /v1/builds/get_delta
+func GetDeltaReleases(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    fmt.Fprintf(w, "{ errors: [ { message: 'Unable to find delta' } ] }")
+}
