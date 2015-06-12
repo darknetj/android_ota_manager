@@ -9,6 +9,7 @@ import (
   "fmt"
   "os"
   "strings"
+  "net/http"
   "gopkg.in/gorp.v1"
   _ "github.com/mattn/go-sqlite3"
   "github.com/olebedev/config"
@@ -71,13 +72,14 @@ func server(port string, templates string) {
   r := mux.NewRouter()
   admin := mux.NewRouter()
 
-  // Releases API
+  // Public routes
   r.HandleFunc("/", controllers.ReleasesJSON).Methods("GET")
   r.HandleFunc("/", controllers.PostReleasesJSON).Methods("POST")
   r.HandleFunc("/releases.json", controllers.ReleasesJSON).Methods("GET")
   r.HandleFunc("/changelog/{incremental}.txt", controllers.ChangelogFiles).Methods("GET")
   r.HandleFunc("/builds/{name}", controllers.DownloadFiles).Methods("GET")
   r.HandleFunc("/v1/build/get_delta", controllers.GetDeltaReleases)
+  r.PathPrefix("/static").Handler(http.FileServer(http.Dir("/var/lib/static/")))
 
   // Authentication
   r.HandleFunc("/login", controllers.Login)
