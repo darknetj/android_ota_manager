@@ -35,16 +35,16 @@ mkdir $buildsPath/builds/published
 echo "> Setting permissions"
 chmod 555 /usr/local/bin/android_ota_server 
 
-chmod -R 0660 $dbPath
-chmod -R 0660 $appPath
-chmod -R 0660 $buildsPath
+chmod -R 0770 $dbPath
+chmod -R 0770 $appPath
+chmod -R 0770 $buildsPath
 
 chown -R android_ota_server:storage $dbPath
 chown -R android_ota_server:storage $appPath
-chgrp -R storage $buildsPath/builds
+chown -R uploader:storage $buildsPath/builds
 
 echo "> Installing systemd service"
-cp android_ota_server.service /usr/lib/systemd/system/android_ota_server.service
+cp android_ota_server.service /etc/systemd/system/android_ota_server.service
 systemctl enable android_ota_server.service
 
 echo "> Adding android_ota_server user"
