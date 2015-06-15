@@ -21,7 +21,9 @@ func Files(w http.ResponseWriter, r *http.Request) {
 func DownloadFiles(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     file,_ := models.FindFileByName(vars["name"])
-    http.ServeFile(w, r, file.DownloadPath())
+    path := file.DownloadPath()
+    log.Println("User downloading: ", path)
+    http.ServeFile(w, r, path)
 }
 
 // GET /changelog/{incremental}.txt
