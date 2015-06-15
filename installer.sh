@@ -50,7 +50,7 @@ systemctl enable android_ota_server.service
 echo "> Adding android_ota_server user"
 useradd android_ota_server -s /bin/false
 groupadd storage 
-usermod -a -G storage android_ota_server
+usermod -g storage android_ota_server
 
 echo "> Starting android_ota_server"
 systemctl enable android_ota_server.service
