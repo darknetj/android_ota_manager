@@ -9,7 +9,7 @@ import (
 
 func TestServer(server string) {
   fmt.Println("URL:>", server)
-
+  /* {"method":"get_all_builds","params":{"device":"hammerhead","channels": ["nightly"],"source_incremental":"397d2517f2"}} */
   var jsonStr = []byte(`
     "method": "get_all_builds",
     "params": {

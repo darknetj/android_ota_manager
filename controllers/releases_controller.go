@@ -2,19 +2,21 @@ package controllers
 
 import (
     "fmt"
+    "log"
     "strconv"
     "time"
     "net/http"
     "encoding/json"
     "github.com/copperhead-security/android_ota_server/models"
     "github.com/gorilla/mux"
+    "github.com/bitly/go-simplejson"
 )
 
 // GET releases.json
 func ReleasesJSON(w http.ResponseWriter, r *http.Request) {
     data := map[string]interface{} {
         "id": nil,
-        "result": models.ReleasesListJSON(),
+        "result": models.ReleasesIndexJSON(),
         "error": nil,
     }
     js, _ := json.Marshal(data)
@@ -24,12 +26,25 @@ func ReleasesJSON(w http.ResponseWriter, r *http.Request) {
 
 // POST /releases.json
 func PostReleasesJSON(w http.ResponseWriter, r *http.Request) {
-    r.ParseForm();
+    // Parse params from JSON
+    val := new(struct {
+        Method string `json:"method"`
+        Params *simplejson.Json  `json:"params"`
+    })
+    decoder := json.NewDecoder(r.Body)
+    err := decoder.Decode(&val)
+    if err != nil {
+        log.Println(err)
+    }
+
+    // Extract filters to apply to releases
+    device, _ := val.Params.Get("device").String()
+    channels, _ := val.Params.Get("channels").StringArray()
 
     // Prep JSON data
     data := map[string]interface{} {
         "id": nil,
-        "result": models.ReleasesListJSON(),
+        "result": models.ReleasesListJSON(device, channels),
         "error": nil,
     }
     js,_ := json.Marshal(data)

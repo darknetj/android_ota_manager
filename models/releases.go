@@ -59,7 +59,7 @@ func ReleasesIndex() []Release {
     return releases
 }
 
-func ReleasesListJSON() []map[string]string {
+func ReleasesIndexJSON() []map[string]string {
     var releasesJSON []map[string]string
     releases := ReleasesIndex()
     for _, r := range releases {
@@ -75,6 +75,28 @@ func ReleasesListJSON() []map[string]string {
             "incremental": f.Incremental,
         }
         releasesJSON = append(releasesJSON, newRelease)
+    }
+    return releasesJSON
+}
+
+func ReleasesListJSON(device string, channels []string) []map[string]string {
+    var releasesJSON []map[string]string
+    releases := ReleasesIndex()
+    for _, r := range releases {
+        f := FindFile(r.FileId)
+        if f.Device == device && lib.StringInSlice(r.Channel, channels) {
+            newRelease := map[string]string{
+                "channel": r.Channel,
+                "filename": f.Name,
+                "url": f.DownloadUrl(),
+                "changes": f.ChangelogUrl(),
+                "md5sum": f.Md5,
+                "api_level": f.ApiLevel,
+                "timestamp": string(f.BuildDate),
+                "incremental": f.Incremental,
+            }
+            releasesJSON = append(releasesJSON, newRelease)
+        }
     }
     return releasesJSON
 }
