@@ -48,7 +48,7 @@ func FindUser(id int64) (User, error) {
 
 func FindUserByUsername(username string) (User, error) {
     var user User
-    err := dbmap.SelectOne(&user, "select * from users where username=?", username)
+    err := dbmap.SelectOne(&user, "select * from users where username=? LIMIT 1", username)
     if err != nil {
       log.Println("Find user by username failed", username, err)
     }

@@ -38,16 +38,24 @@ func DeleteRelease(release Release) {
     lib.CheckErr(err, "Delete failed")
 }
 
+func (r Release) ChannelNightly() bool {
+    return r.Channel == "NIGHTLY"
+}
+
+func (r Release) ChannelSnapshot() bool {
+    return r.Channel == "SNAPSHOT"
+}
+
 func FindRelease(id int64) Release {
     var release Release
-    err := dbmap.SelectOne(&release, "select * from releases where release_id=?", id)
+    err := dbmap.SelectOne(&release, "select * from releases where release_id=? LIMIT 1", id)
     lib.CheckErr(err, "Find release failed")
     return release
 }
 
 func FindReleaseByFile(file File) Release {
     var release Release
-    err := dbmap.SelectOne(&release, "select * from releases where FileId=?", file.Id)
+    err := dbmap.SelectOne(&release, "select * from releases where FileId=? LIMIT 1", file.Id)
     lib.CheckErr(err, "Find release by file failed")
     return release
 }

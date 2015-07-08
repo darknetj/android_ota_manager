@@ -1,24 +1,28 @@
 <a href="/admin/releases">< Back to Releases</a>
 <h1>{{ .title }}</h1>
 <form action='{{ .endpoint }}' method="post">
-<div class="form-group">
-  <label for="Filename">
-    Build file (zip files uploaded to /builds directory) 
-    <a href='/admin/files'>Manage Files</a>
-  </label>
-  <select name='FileId' class='form-control'>
-    {{range .files }}
-      <option value='{{ .Id }}'>{{ .Name }}</option>
-    {{ end }}
-  </select>
-</div>
+
+{{ $files := .files }}
+
 {{with .release }}
+  <div class="form-group">
+    <label for="Filename">
+      Build file (zip files uploaded to /builds directory) 
+      <a href='/admin/files'>Manage Files</a>
+    </label>
+    <select name='FileId' class='form-control'>
+      {{ $releaseId := .FileId }}
+      {{range $files }}
+        <option value='{{ .Id }}' {{if eq $releaseId .Id}}selected='selected'{{end}}>{{ .Name }}</option>
+      {{ end }}
+    </select>
+  </div>
+  <input type='hidden' name='Id' value='{{ .Id }}'>
   <div class="form-group">
     <label for="Channel">Channel</label>
     <select name='Channel' class='form-control'>
-      <option value='TESTING'>TESTING</option>
-      <option value='NIGHTLY'>NIGHTLY</option>
-      <option value='STABLE'>STABLE</option>
+      <option value='NIGHTLY' {{if .ChannelNightly}}selected='selected'{{end}}>NIGHTLY</option>
+      <option value='SNAPSHOT'{{if .ChannelSnapshot}}selected='selected'{{end}}>SNAPSHOT</option>
     </select>
   </div>
   <div class="form-group">
@@ -26,5 +30,5 @@
     <textarea rows='10' cols='50' name='Changelog' class='form-control'>{{ .Changelog }}</textarea>
   </div>
   {{ end }}
-  <button type="submit" class="btn btn-default">Publish</button>
+  <button type="submit" class="btn btn-default">Save</button>
 </form>

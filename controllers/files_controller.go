@@ -29,10 +29,8 @@ func DownloadFiles(w http.ResponseWriter, r *http.Request) {
 // GET /changelog/{incremental}.txt
 func ChangelogFiles(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
-    log.Println(vars["incremental"])
     file,err := models.FindFileByIncremental(vars["incremental"])
     lib.CheckErr(err, "Find by incremental failed")
-    log.Println(file.Id)
     release := models.FindReleaseByFile(file)
     changelog := strings.Join([]string{"Release notes for Copperhead OS #", file.Incremental, "\n---\n", release.Changelog}, "")
     fmt.Fprintf(w, changelog)
