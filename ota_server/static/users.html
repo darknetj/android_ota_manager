@@ -1,0 +1,21 @@
+<h1>Users</h1>
+<table class='table'>
+  <tr>
+    <th>Username</th>
+    <th>Created</th>
+    <th colspan='1'>Actions</th>
+  </tr>
+
+  {{range .users }}
+    <tr>
+      <td>{{ .Username }}</td>
+      <td>{{ .Created }}</td>
+      <td>
+        <form action="/admin/users/delete" method="post">
+          <input type='hidden' name='Id' value='{{ .Id }}'>
+          <input type='submit' value='Delete'>
+        </form>
+      </td>
+    </tr>
+  {{ end }}
+</table>

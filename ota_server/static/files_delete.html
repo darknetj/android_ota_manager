@@ -1,0 +1,17 @@
+<html>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div class='container'>
+    <h1>Are you sure you want to delete:</h1>
+    <h3>{{ .Name }}</h3>
+
+    <form action="/builds/delete" method="post">
+      <input type='hidden' name='buildName' value='{{ .Name }}'>
+      <input type='submit' value='Yes, delete file'>
+    </form>
+    <a href='#'>No thanks</a>
+  </div>
+</body>
+</html>
