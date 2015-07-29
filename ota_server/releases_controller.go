@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/copperhead-security/android_ota_updates/database"
+	"github.com/copperhead-security/android_ota_manager/database"
 	"github.com/gorilla/mux"
 )
 

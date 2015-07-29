@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/codegangsta/negroni"
-	"github.com/copperhead/ota-updates/database"
+	"github.com/copperhead-security/android_ota_manager/database"
 	"github.com/gorilla/sessions"
 	"github.com/unrolled/render"
 )

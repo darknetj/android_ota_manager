@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/copperhead-security/android_ota_updates/database"
+	"github.com/copperhead-security/android_ota_manager/database"
 	"github.com/elithrar/simple-scrypt"
 )
 

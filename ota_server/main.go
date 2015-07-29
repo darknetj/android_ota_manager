@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/codegangsta/negroni"
-	"github.com/copperhead-security/android_ota_updates/database"
+	"github.com/copperhead-security/android_ota_manager/database"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/olebedev/config"

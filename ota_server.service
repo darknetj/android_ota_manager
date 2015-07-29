@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 Type=simple
-User=android_ota_server
-ExecStart=/usr/local/bin/android_ota_server -env=production -config=/var/lib/android_ota_server/config.yml
+User=android_ota_manager
+ExecStart=/usr/local/bin/android_ota_manager -env=production -config=/var/lib/android_ota_manager/config.yml
 Restart=on-abort
 
 [Install]
