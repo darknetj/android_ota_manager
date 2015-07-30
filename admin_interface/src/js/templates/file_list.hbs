@@ -1,0 +1,35 @@
+<a href="#/files/refresh" class="new btn btn-primary">Refresh file list</a>
+<h1>Files uploaded to /build</h1>
+
+<table class='table'>
+    <tr>
+        <th>Show Details</th>
+        <th>Published</th>
+        <th>Size</th>
+        <th>API Level</th>
+        <th>Build Date</th>
+        <th>Build User</th>
+        <th>Build Device</th>
+        <th>Download</th>
+        <th>Delete</th>
+    </tr>
+
+    {{#each files}}
+        <tr>
+            <td><a href='#/files/show/{{Id}}'>{{Name}}</a></td>
+            <td>{{Published}}</td>
+            <td>{{Size}}</td>
+            <td>{{ApiLevel}}</td>
+            <td>{{BuildDate}}</td>
+            <td>{{User}}</td>
+            <td>{{Device}}</td>
+            <td><a href='{{DownloadUrl}}'>Download</a></td>
+            <td>
+                <form action="#/files/delete" method="post">
+                    <input type='hidden' name='Id' value='{{Id}}'>
+                    <input type='submit' value='Delete'>
+                </form>
+            </td>
+        </tr>
+    {{/each}}
+</table>

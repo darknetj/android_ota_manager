@@ -19,6 +19,10 @@ type LoginForm struct {
 	Password string `form:"password" binding:"required"`
 }
 
+func (u User) GetId() int64 {
+    return u.Id
+}
+
 func (u *User) CreatedAt() time.Time {
 	t := time.Unix(0, u.Created)
 	return t

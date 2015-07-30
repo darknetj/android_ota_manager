@@ -1,0 +1,25 @@
+{
+  "name": "ota_web_admin",
+  "version": "0.0.1",
+  "description": "Web interface for managing OTA releases distributed via ota_server",
+  "main": "gulpfule.js",
+  "keywords": [
+    "ota",
+    "android",
+    "admin"
+  ],
+  "author": "Dan McGrady <dan.mcgrady@copperhead.co",
+  "license": "GPLv2",
+  "devDependencies": {
+    "backbone": "^1.2.1",
+    "backbone-crossdomain": "^0.4.2",
+    "browser-sync": "^2.8.1",
+    "gulp": "^3.9.0",
+    "gulp-browserify": "^0.5.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-connect": "^2.2.0",
+    "handlebars": "^3.0.3",
+    "hbsfy": "^2.2.1",
+    "jquery": "^2.1.4"
+  }
+}

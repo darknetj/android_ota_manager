@@ -2,3 +2,7 @@ target/
 builds/
 *.db
 *.sql
+node_modules
+dist
+api/api
+ota_server/ota_server

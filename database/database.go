@@ -14,7 +14,7 @@ var BuildsPath string
 func InitDb(dbPath string, builds string) *gorp.DbMap {
 	log.Println("Connecting to database ", dbPath)
 	db, err := sql.Open("sqlite3", dbPath)
-	lib.CheckErr(err, "sql.Open failed")
+	CheckErr(err, "sql.Open failed")
 
 	dbmap = &gorp.DbMap{Db: db, Dialect: gorp.SqliteDialect{}}
 	dbmap.AddTableWithName(Release{}, "releases").SetKeys(true, "Id")
@@ -25,7 +25,7 @@ func InitDb(dbPath string, builds string) *gorp.DbMap {
 	//err = dbmap.TruncateTables()
 
 	err = dbmap.CreateTablesIfNotExists()
-	lib.CheckErr(err, "Create tables failed")
+	CheckErr(err, "Create tables failed")
 
 	BuildsPath = builds
 	return dbmap

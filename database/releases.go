@@ -13,6 +13,10 @@ type Release struct {
 	Channel   string
 }
 
+func (r Release) GetId() int64 {
+    return r.Id
+}
+
 func NewRelease() Release {
 	release := Release{
 		Id:        0,
@@ -24,17 +28,17 @@ func NewRelease() Release {
 
 func CreateRelease(release Release) {
 	err := dbmap.Insert(&release)
-	lib.CheckErr(err, "Insert release failed")
+	CheckErr(err, "Insert release failed")
 }
 
 func UpdateRelease(release Release) {
 	_, err := dbmap.Update(&release)
-	lib.CheckErr(err, "Update failed")
+	CheckErr(err, "Update failed")
 }
 
 func DeleteRelease(release Release) {
 	_, err := dbmap.Delete(&release)
-	lib.CheckErr(err, "Delete failed")
+	CheckErr(err, "Delete failed")
 }
 
 func (r Release) ChannelNightly() bool {
@@ -48,21 +52,21 @@ func (r Release) ChannelSnapshot() bool {
 func FindRelease(id int64) Release {
 	var release Release
 	err := dbmap.SelectOne(&release, "select * from releases where release_id=? LIMIT 1", id)
-	lib.CheckErr(err, "Find release failed")
+	CheckErr(err, "Find release failed")
 	return release
 }
 
 func FindReleaseByFile(file File) Release {
 	var release Release
 	err := dbmap.SelectOne(&release, "select * from releases where FileId=? LIMIT 1", file.Id)
-	lib.CheckErr(err, "Find release by file failed")
+	CheckErr(err, "Find release by file failed")
 	return release
 }
 
 func ReleasesIndex() []Release {
 	var releases []Release
 	_, err := dbmap.Select(&releases, "select * from releases order by release_id DESC")
-	lib.CheckErr(err, "Select all releases failed")
+	CheckErr(err, "Select all releases failed")
 	return releases
 }
 
@@ -91,7 +95,7 @@ func ReleasesListJSON(device string, channels []string) []map[string]string {
 	releases := ReleasesIndex()
 	for _, r := range releases {
 		f := FindFile(r.FileId)
-		if f.Device == device && lib.StringInSlice(r.Channel, channels) {
+		if f.Device == device && StringInSlice(r.Channel, channels) {
 			newRelease := map[string]string{
 				"channel":     r.Channel,
 				"filename":    f.Name,

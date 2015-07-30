@@ -52,21 +52,21 @@ func (b File) DeleteUrl() string {
 func Files() []File {
 	var files []File
 	_, err := dbmap.Select(&files, "select * from files where published=0")
-	lib.CheckErr(err, "Select all files failed")
+	CheckErr(err, "Select all files failed")
 	return files
 }
 
 func FilesIndex() []File {
 	var files []File
 	_, err := dbmap.Select(&files, "select * from files order by file_id DESC")
-	lib.CheckErr(err, "Select all files failed")
+	CheckErr(err, "Select all files failed")
 	return files
 }
 
 func FindFile(id int64) File {
 	var file File
 	err := dbmap.SelectOne(&file, "select * from files where file_id=?", id)
-	lib.CheckErr(err, "Find file failed")
+	CheckErr(err, "Find file failed")
 	return file
 }
 
@@ -84,22 +84,22 @@ func FindFileByIncremental(incremental string) (File, error) {
 
 func CreateFile(file File) {
 	err := dbmap.Insert(&file)
-	lib.CheckErr(err, "Insert file failed")
+	CheckErr(err, "Insert file failed")
 }
 
 func UpdateFile(file File) {
 	_, err := dbmap.Update(&file)
-	lib.CheckErr(err, "Update file failed")
+	CheckErr(err, "Update file failed")
 }
 
 func DeleteFile(file File) {
 	_, err := dbmap.Delete(&file)
-	lib.CheckErr(err, "Delete file failed")
+	CheckErr(err, "Delete file failed")
 	filePath := strings.Join([]string{BuildsPath, file.Name}, "/")
 	if _, err := os.Stat(filePath); err == nil {
 		deletedPath := strings.Join([]string{BuildsPath, "deleted", file.Name}, "/")
 		err = os.Rename(filePath, deletedPath)
-		lib.CheckErr(err, "Move file to deleted directory failed")
+		CheckErr(err, "Move file to deleted directory failed")
 	}
 }
 
@@ -109,10 +109,10 @@ func PublishFile(file File) {
 	if _, err := os.Stat(filePath); err == nil {
 		// mv to /builds/production
 		err := os.Rename(filePath, publishPath)
-		lib.CheckErr(err, "Move file to published directory failed")
+		CheckErr(err, "Move file to published directory failed")
 		// make read-only
 		err = os.Chmod(publishPath, 0444)
-		lib.CheckErr(err, "Chmod file to read-only failed")
+		CheckErr(err, "Chmod file to read-only failed")
 	}
 }
 
@@ -122,10 +122,10 @@ func UnpublishFile(file File) {
 	if _, err := os.Stat(publishPath); err == nil {
 		// make writeable
 		err := os.Chmod(publishPath, 0777)
-		lib.CheckErr(err, "Chmod file to writeable failed")
+		CheckErr(err, "Chmod file to writeable failed")
 		// mv to /builds/production
 		err = os.Rename(publishPath, filePath)
-		lib.CheckErr(err, "Move file to builds directory failed")
+		CheckErr(err, "Move file to builds directory failed")
 	}
 }
 

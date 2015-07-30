@@ -1,0 +1,31 @@
+<a href="#/releases/new" class="new btn btn-primary">New Release</a>
+<h1>Releases</h1>
+<table class='table'>
+    <tr>
+        <th>Created at</th>
+        <th>File</th>
+        <th>Channel</th>
+        <th>Published</th>
+        <th>Changelog</th>
+        <th colspan='2'>Actions</th>
+    </tr>
+
+    {{#each releases}}
+        <tr>
+            <td>{{created}}</td>
+            <td><a href='#/files/show/{{filename}}'>{{filename}}</a></td>
+            <td>{{Channel}}</td>
+            <td>
+                Yes
+            </td>
+            <td><a href='#/releases/changelog/{{id}}'>changelog</a></td>
+            <td><a href='#/releases/edit/{{id}}'>Edit</a></td>
+            <td>
+                <form action="#/releases/delete" method="post">
+                    <input type='hidden' name='id' value='{{id}}'>
+                    <input type='submit' value='Delete'>
+                </form>
+            </td>
+        </tr>
+    {{/each}}
+</table>
