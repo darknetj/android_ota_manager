@@ -19,6 +19,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/olebedev/config"
 	"github.com/unrolled/secure"
+	"github.com/yageek/cors"
 	"gopkg.in/gorp.v1"
 )
 
@@ -125,6 +126,13 @@ func server(port string, templates string) {
 
 	n := negroni.Classic()
 	n.Use(negroni.HandlerFunc(secureMiddleware.HandlerFuncWithNext))
+	n.Use(cors.Allow(&cors.Options{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET"},
+		AllowHeaders:     []string{"Origin"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: false,
+	}))
 	n.UseHandler(r)
 	n.Run(":8080")
 }

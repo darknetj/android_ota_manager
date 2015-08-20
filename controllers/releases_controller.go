@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/bitly/go-simplejson"
 	"github.com/copperhead-security/android_ota_server/models"
 	"github.com/gorilla/mux"
 )
