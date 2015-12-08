@@ -137,11 +137,15 @@ func RefreshBuilds() {
 	PruneMissingFiles()
 
 	// Check for files in build directory that match zip MIME
-	mm, _ := magicmime.New(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR)
+	if err := magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR); err != nil {
+		log.Fatal(err)
+	}
+	defer magicmime.Close()
+
 	files, _ := ioutil.ReadDir(BuildsPath)
 	for _, f := range files {
 		filepath := strings.Join([]string{BuildsPath, f.Name()}, "/")
-		mimetype, _ := mm.TypeByFile(filepath)
+		mimetype, _ := magicmime.TypeByFile(filepath)
 		if mimetype == "application/java-archive" {
 			existingFile, err := FindFileByName(f.Name())
 			if err != nil {
