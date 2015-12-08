@@ -7,7 +7,7 @@ development:
 
 production:
   port: 8080
-  directory: /var/lib/android_ota_server
-  database: /var/lib/android_ota_server/ota.sql
-  builds: /var/lib/android_ota_server/builds
-  templates: /var/lib/android_ota_server/views
+  directory: /var/lib/android_ota_manager
+  database: /var/lib/android_ota_manager/ota.sql
+  builds: /var/lib/android_ota_manager/builds
+  templates: /var/lib/android_ota_manager/views

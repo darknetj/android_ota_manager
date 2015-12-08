@@ -5,7 +5,7 @@ Golang web app that provides a simple HTTP server to deliver OTA updates.
 How to Run:
 
     ./install.sh
-    $ android_ota_server -env=production -config=/var/lib/ota_server/config.yml
+    $ android_ota_manager -env=production -config=/var/lib/ota_server/config.yml
 
 Command line flags:
 
@@ -15,7 +15,7 @@ Command line flags:
 
 Adding an admin user:
 
-    $ android_ota_server -add_user -env=production -config=/var/lib/ota_server/config.yml
+    $ android_ota_manager -add_user -env=production -config=/var/lib/ota_server/config.yml
     $ > Enter a username:
     $ > Enter a password:
     $ User saved!
@@ -33,4 +33,4 @@ Uploading a file:
 
 I recommend using rsync over SSH to upload files:
 
-    rsync -zv builds/* server:/var/lib/android_ota_server/builds
+    rsync -zv builds/* server:/var/lib/android_ota_manager/builds

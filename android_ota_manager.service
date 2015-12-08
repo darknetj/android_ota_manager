@@ -1,0 +1,12 @@
+[Unit]
+Description=Copperhead Android OTA Server
+After=network.target
+
+[Service]
+Type=simple
+User=android_ota_manager
+ExecStart=/usr/local/bin/android_ota_manager -env=production -config=/var/lib/android_ota_manager/config.yml
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
