@@ -12,7 +12,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/copperhead-security/android_ota_server/lib"
+	"github.com/copperhead/android_ota_manager/lib"
 	"github.com/rakyll/magicmime"
 )
 

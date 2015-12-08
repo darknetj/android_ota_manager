@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/copperhead-security/android_ota_server/lib"
+	"github.com/copperhead/android_ota_manager/lib"
 	_ "github.com/mattn/go-sqlite3"
 	"gopkg.in/gorp.v1"
 )
