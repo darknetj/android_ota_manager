@@ -33,10 +33,12 @@ func main() {
 
 	development = true
 	templates := "./views"
-	builds := "./builds"
+
+	data := os.Getenv("OPENSHIFT_DATA_DIR")
+	builds := data + "builds"
 
 	// Connect to database
-	databasePath := "ota.sql"
+	databasePath := data + "ota.sql"
 	db := models.InitDb(databasePath, builds)
 	go models.RefreshBuilds()
 	defer db.Db.Close()
