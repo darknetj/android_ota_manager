@@ -22,10 +22,8 @@ type File struct {
 	Size        int64
 	Md5         string
 	BuildDate   string
-	ApiLevel    string
 	Incremental string
 	Device      string
-	User        string
 	Published   bool
 }
 

@@ -79,7 +79,6 @@ func ReleasesIndexJSON() []map[string]string {
 			"url":         f.DownloadUrl(),
 			"changes":     f.ChangelogUrl(),
 			"md5sum":      f.Md5,
-			"api_level":   f.ApiLevel,
 			"timestamp":   string(f.BuildDate),
 			"incremental": f.Incremental,
 		}
@@ -100,7 +99,6 @@ func ReleasesListJSON(device string, channels []string) []map[string]string {
 				"url":         f.DownloadUrl(),
 				"changes":     f.ChangelogUrl(),
 				"md5sum":      f.Md5,
-				"api_level":   f.ApiLevel,
 				"timestamp":   string(f.BuildDate),
 				"incremental": f.Incremental,
 			}
