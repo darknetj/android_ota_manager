@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -21,8 +22,7 @@ func Files(w http.ResponseWriter, r *http.Request) {
 // GET /builds/{name}
 func DownloadFiles(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	file, _ := models.FindFileByName(vars["name"])
-	path := file.DownloadPath()
+	path := fmt.Sprintf("%s/builds/published/%s", os.Getenv("OPENSHIFT_DATA_DIR"), vars["name"])
 	log.Println("User downloading: ", path)
 	http.ServeFile(w, r, path)
 }
