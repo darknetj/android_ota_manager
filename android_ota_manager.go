@@ -12,42 +12,31 @@ import (
 
 	"github.com/codegangsta/negroni"
 	"github.com/copperhead/android_ota_manager/controllers"
-	"github.com/copperhead/android_ota_manager/lib"
 	"github.com/copperhead/android_ota_manager/models"
 	"github.com/copperhead/android_ota_manager/tests"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/olebedev/config"
 	"github.com/unrolled/secure"
 	"github.com/rs/cors"
 	"gopkg.in/gorp.v1"
 )
 
 var (
-	cfg         *config.Config
 	db          *gorp.DbMap
 	development bool
 )
 
 func main() {
-	// Parse CLI arguments
-	configPath := flag.String("config", "./config.yml", "Path to config file")
-	env := flag.String("env", "development", "Run in development or production mode")
 	userFlag := flag.Bool("add_user", false, "Run CLI for adding user to database")
 	testFlag := flag.Bool("test", false, "Run test script to simulate client")
 	flag.Parse()
 
-	// Parse config file
-	cfg, err := config.ParseYamlFile(*configPath)
-	cfg, err = cfg.Get(*env)
-	port, _ := cfg.String("port")
-	development = strings.Contains(*env, "development")
-	templates, _ := cfg.String("templates")
-	builds, _ := cfg.String("builds")
-	lib.CheckErr(err, "Config parsing failed")
+	development = true
+	templates := "./views"
+	builds := "./builds"
 
 	// Connect to database
-	databasePath, _ := cfg.String("database")
+	databasePath := "ota.sql"
 	db := models.InitDb(databasePath, builds)
 	go models.RefreshBuilds()
 	defer db.Db.Close()
@@ -61,14 +50,12 @@ func main() {
 		} else {
 			// Start server
 			controllers.InitMiddleware(templates)
-			server(port, templates)
+			server(templates)
 		}
 	}
 }
 
-func server(port string, templates string) {
-	log.Println("--- Started Copperhead OTA Server on port", port, "---")
-
+func server(templates string) {
 	// Create router
 	r := mux.NewRouter()
 	admin := mux.NewRouter()
@@ -134,7 +121,8 @@ func server(port string, templates string) {
 		AllowCredentials: false,
 	}))
 	n.UseHandler(r)
-	n.Run(":8080")
+	bind := fmt.Sprintf("%s:%s", os.Getenv("OPENSHIFT_GO_IP"), os.Getenv("OPENSHIFT_GO_PORT"))
+	n.Run(bind)
 }
 
 func addUser() {
