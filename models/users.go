@@ -75,3 +75,8 @@ func CreateUser(username string, password string) error {
 	}
 	return err
 }
+
+func DeleteUser(user User) error {
+	_, err := dbmap.Delete(&user)
+	return err
+}

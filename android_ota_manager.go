@@ -93,6 +93,7 @@ func server(templates string) {
 
 	// Users
 	admin.HandleFunc("/admin/users", controllers.Users)
+	admin.HandleFunc("/admin/users/delete", controllers.DeleteUsers)
 
 	// Negroni
 	secureMiddleware := secure.New(secure.Options{

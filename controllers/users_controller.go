@@ -67,3 +67,14 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	session.Save(r, w)
 	http.Redirect(w, r, "/login", http.StatusFound)
 }
+
+// POST /files/delete
+func DeleteUsers(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	id, _ := strconv.ParseInt(r.FormValue("Id"), 10, 64)
+	user, _ := models.FindUser(id)
+
+	models.DeleteUser(user)
+
+	http.Redirect(w, r, "/admin/users", http.StatusFound)
+}
