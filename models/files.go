@@ -13,7 +13,6 @@ import (
 	"strings"
 
 	"github.com/copperhead/android_ota_manager/lib"
-	"github.com/rakyll/magicmime"
 )
 
 type File struct {
@@ -136,17 +135,10 @@ func RefreshBuilds() {
 	// Remove any missing files from the DB
 	PruneMissingFiles()
 
-	// Check for files in build directory that match zip MIME
-	if err := magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR); err != nil {
-		log.Fatal(err)
-	}
-	defer magicmime.Close()
-
 	files, _ := ioutil.ReadDir(BuildsPath)
 	for _, f := range files {
 		filepath := strings.Join([]string{BuildsPath, f.Name()}, "/")
-		mimetype, _ := magicmime.TypeByFile(filepath)
-		if mimetype == "application/java-archive" {
+                if strings.HasSuffix(filepath, ".zip") {
 			existingFile, err := FindFileByName(f.Name())
 			if err != nil {
 				// Extract build props from file in zip
@@ -173,7 +165,7 @@ func RefreshBuilds() {
 				log.Println("Refresh Builds: File exists, skipping")
 			}
 		} else {
-			log.Println("Refresh Builds: File skipped invalid MIME", mimetype)
+			log.Println("Refresh Builds: File skipped invalid type", filepath)
 		}
 	}
 
