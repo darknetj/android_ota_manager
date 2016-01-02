@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/copperhead-security/android_ota_server/lib"
+	"github.com/copperhead/android_ota_manager/lib"
 )
 
 type Release struct {
