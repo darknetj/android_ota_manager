@@ -76,6 +76,7 @@ func ReleasesIndexJSON() []map[string]string {
 		newRelease := map[string]string{
 			"channel":     r.Channel,
 			"filename":    f.Name,
+			"fingerprint": f.Fingerprint,
 			"url":         f.DownloadUrl(),
 			"changes":     f.ChangelogUrl(),
 			"md5sum":      f.Md5,
@@ -96,6 +97,7 @@ func ReleasesListJSON(device string, channels []string) []map[string]string {
 			newRelease := map[string]string{
 				"channel":     r.Channel,
 				"filename":    f.Name,
+				"fingerprint": f.Fingerprint,
 				"url":         f.DownloadUrl(),
 				"changes":     f.ChangelogUrl(),
 				"md5sum":      f.Md5,

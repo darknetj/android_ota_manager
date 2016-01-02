@@ -24,6 +24,7 @@ type File struct {
 	BuildDate   string
 	Incremental string
 	Device      string
+	Fingerprint string
 	Published   bool
 }
 
@@ -147,6 +148,7 @@ func RefreshBuilds() {
 					Name:        f.Name(),
 					Size:        f.Size(),
 					Md5:         Md5File(filepath),
+					Fingerprint: props["post-build"],
 					BuildDate:   props["post-timestamp"],
 					Device:      props["pre-device"],
 					Published:   false,
