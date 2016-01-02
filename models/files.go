@@ -149,11 +149,8 @@ func RefreshBuilds() {
 					Name:        f.Name(),
 					Size:        f.Size(),
 					Md5:         Md5File(filepath),
-					BuildDate:   props["ro.build.date.utc"],
-					ApiLevel:    props["ro.build.version.sdk"],
-					Incremental: props["ro.build.version.incremental"],
-					Device:      props["ro.product.name"],
-					User:        props["ro.build.user"],
+					BuildDate:   props["post-timestamp"],
+					Device:      props["pre-device"],
 					Published:   false,
 				}
 				// Insert file in database
@@ -209,7 +206,7 @@ func BuildPropsFromZip(filepath string) map[string]string {
 
 	// Iterate through the files in the archive
 	for _, f := range r.File {
-		if f.Name == "system/build.prop" {
+		if f.Name == "META-INF/com/android/metadata" {
 			rc, _ := f.Open()
 			scanner := bufio.NewScanner(rc)
 			for scanner.Scan() {
@@ -219,6 +216,7 @@ func BuildPropsFromZip(filepath string) map[string]string {
 				}
 			}
 			rc.Close()
+			break
 		}
 	}
 	return props
