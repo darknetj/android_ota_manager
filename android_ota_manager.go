@@ -30,16 +30,12 @@ func main() {
 	testFlag := flag.Bool("test", false, "Run test script to simulate client")
 	flag.Parse()
 
-	templates := "./views"
-
-	data := os.Getenv("OPENSHIFT_DATA_DIR")
-	builds := data + "builds"
-
 	// Connect to database
-	databasePath := data + "ota.sql"
-	db := models.InitDb(databasePath, builds)
-	go models.RefreshBuilds()
+	data := os.Getenv("OPENSHIFT_DATA_DIR")
+	db := models.InitDb(data + "ota.sql", data + "builds")
 	defer db.Db.Close()
+
+	go models.RefreshBuilds()
 
 	if *testFlag {
 		tests.TestServer("http://localhost:8080")
@@ -49,6 +45,7 @@ func main() {
 			addUser()
 		} else {
 			// Start server
+			templates := "./views"
 			controllers.InitMiddleware(templates)
 			server(templates)
 		}
