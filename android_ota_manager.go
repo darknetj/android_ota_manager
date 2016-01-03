@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 
@@ -24,6 +25,11 @@ import (
 var (
 	db          *gorp.DbMap
 )
+
+func dynamicPublicCaching(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	w.Header().Set("Cache-Control", "public, no-cache")
+	next(w, r)
+}
 
 func main() {
 	userFlag := flag.Bool("add_user", false, "Run CLI for adding user to database")
@@ -112,6 +118,7 @@ func server(templates string) {
 	))
 
 	n := negroni.Classic()
+	n.Use(negroni.HandlerFunc(dynamicPublicCaching))
 	n.Use(negroni.HandlerFunc(secureMiddleware.HandlerFuncWithNext))
 	n.Use(cors.New(cors.Options{
 		AllowedOrigins:     []string{"*"},

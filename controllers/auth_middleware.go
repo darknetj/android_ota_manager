@@ -35,6 +35,7 @@ func InitMiddleware(templates string) {
 
 func AuthMiddleware() negroni.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+		w.Header().Set("Cache-Control", "private, no-cache")
 		session, err := CookieStore.Get(r, "auth")
 		if err != nil {
 			log.Println("Error parsing auth cookie", err)
