@@ -23,7 +23,6 @@ import (
 
 var (
 	db          *gorp.DbMap
-	development bool
 )
 
 func main() {
@@ -31,7 +30,6 @@ func main() {
 	testFlag := flag.Bool("test", false, "Run test script to simulate client")
 	flag.Parse()
 
-	development = true
 	templates := "./views"
 
 	data := os.Getenv("OPENSHIFT_DATA_DIR")
@@ -97,15 +95,14 @@ func server(templates string) {
 
 	// Negroni
 	secureMiddleware := secure.New(secure.Options{
-		AllowedHosts:          []string{"127.0.0.1", "localhost", "builds.copperhead.co"},
+		AllowedHosts:          []string{"127.0.0.1", "localhost", "builds.copperhead.co", "builds-copperheadsec.rhcloud.com"},
 		SSLRedirect:           false,
 		STSPreload:            false,
 		FrameDeny:             true,
 		ContentTypeNosniff:    true,
 		BrowserXssFilter:      true,
 		ContentSecurityPolicy: "default-src 'self'; style-src 'self' https://maxcdn.bootstrapcdn.com; font-src https://maxcdn.bootstrapcdn.com;",
-		//IsDevelopment: development,
-		IsDevelopment: true,
+		IsDevelopment: false,
 	})
 
 	// Create a new negroni for the admin middleware
