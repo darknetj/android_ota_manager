@@ -97,7 +97,9 @@ func server(templates string) {
 	secureMiddleware := secure.New(secure.Options{
 		AllowedHosts:          []string{"127.0.0.1", "localhost", "builds.copperhead.co", "builds-copperheadsec.rhcloud.com"},
 		SSLRedirect:           false,
-		STSPreload:            false,
+		STSSeconds:            15552000,
+		STSIncludeSubdomains:  true,
+		STSPreload:            true,
 		FrameDeny:             true,
 		ContentTypeNosniff:    true,
 		BrowserXssFilter:      true,
