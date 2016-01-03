@@ -96,7 +96,7 @@ func server(templates string) {
 	// Negroni
 	secureMiddleware := secure.New(secure.Options{
 		AllowedHosts:          []string{"127.0.0.1", "localhost", "builds.copperhead.co", "builds-copperheadsec.rhcloud.com"},
-		SSLRedirect:           false,
+		SSLRedirect:           true,
 		SSLProxyHeaders:       map[string]string{"X-Forwarded-Proto": "https"},
 		STSSeconds:            15552000,
 		STSIncludeSubdomains:  true,
