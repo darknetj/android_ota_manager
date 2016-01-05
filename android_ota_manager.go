@@ -70,12 +70,16 @@ func server(templates string) {
 	r.HandleFunc("/changelog/{incremental}.txt", controllers.ChangelogFiles).Methods("GET")
 	r.HandleFunc("/builds/{name}", controllers.DownloadFiles).Methods("GET")
 	r.HandleFunc("/v1/build/get_delta", controllers.GetDeltaReleases)
-	//r.PathPrefix("/static").Handler(http.FileServer(http.Dir("/var/lib/static/")))
 
 	// Authentication
 	r.HandleFunc("/login", controllers.Login)
 	r.HandleFunc("/logout", controllers.Logout)
 	r.HandleFunc("/authenticate", controllers.Authenticate)
+
+	// Static content
+	data := os.Getenv("OPENSHIFT_DATA_DIR")
+	challenge := http.FileServer(http.Dir(data + "acme-challenge"))
+	r.PathPrefix("/.well-known/acme-challenge").Handler(http.StripPrefix("/.well-known/acme-challenge", challenge))
 
 	// Releases
 	admin.HandleFunc("/admin/releases", controllers.Releases)
