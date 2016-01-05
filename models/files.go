@@ -137,7 +137,7 @@ func RefreshBuilds() {
 	files, _ := ioutil.ReadDir(BuildsPath)
 	for _, f := range files {
 		filepath := strings.Join([]string{BuildsPath, f.Name()}, "/")
-                if strings.HasSuffix(filepath, ".zip") {
+		if strings.HasSuffix(filepath, ".zip") {
 			existingFile, err := FindFileByName(f.Name())
 			if err != nil {
 				// Extract build props from file in zip

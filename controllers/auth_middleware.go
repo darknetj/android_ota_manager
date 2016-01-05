@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	CookieStore   sessions.Store
-	R             *render.Render
+	CookieStore sessions.Store
+	R           *render.Render
 )
 
 func InitMiddleware(templates string) {

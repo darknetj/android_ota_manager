@@ -17,13 +17,13 @@ import (
 	"github.com/copperhead/android_ota_manager/tests"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/unrolled/secure"
 	"github.com/rs/cors"
+	"github.com/unrolled/secure"
 	"gopkg.in/gorp.v1"
 )
 
 var (
-	db          *gorp.DbMap
+	db *gorp.DbMap
 )
 
 func dynamicPublicCaching(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
@@ -38,7 +38,7 @@ func main() {
 
 	// Connect to database
 	data := os.Getenv("OPENSHIFT_DATA_DIR")
-	db := models.InitDb(data + "ota.sql", data + "builds")
+	db := models.InitDb(data+"ota.sql", data+"builds")
 	defer db.Db.Close()
 
 	go models.RefreshBuilds()
@@ -112,7 +112,7 @@ func server(templates string) {
 		ContentTypeNosniff:    true,
 		BrowserXssFilter:      true,
 		ContentSecurityPolicy: "default-src 'self'; style-src 'self' https://maxcdn.bootstrapcdn.com; font-src https://maxcdn.bootstrapcdn.com;",
-		IsDevelopment: false,
+		IsDevelopment:         false,
 	})
 
 	// Create a new negroni for the admin middleware
@@ -125,10 +125,10 @@ func server(templates string) {
 	n.Use(negroni.HandlerFunc(dynamicPublicCaching))
 	n.Use(negroni.HandlerFunc(secureMiddleware.HandlerFuncWithNext))
 	n.Use(cors.New(cors.Options{
-		AllowedOrigins:     []string{"*"},
-		AllowedMethods:     []string{"GET"},
-		AllowedHeaders:     []string{"Origin"},
-		ExposedHeaders:    []string{"Content-Length"},
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET"},
+		AllowedHeaders:   []string{"Origin"},
+		ExposedHeaders:   []string{"Content-Length"},
 		AllowCredentials: false,
 	}))
 	n.UseHandler(r)
