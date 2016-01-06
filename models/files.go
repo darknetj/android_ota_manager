@@ -142,6 +142,8 @@ func RefreshBuilds() {
 			if err != nil {
 				// Extract build props from file in zip
 				props := BuildPropsFromZip(filepath)
+				parts := strings.Split(props["post-build"], "/")
+				incremental := strings.Split(parts[4], ":")[0]
 
 				// Generate file struct using properties
 				file := File{
@@ -150,6 +152,7 @@ func RefreshBuilds() {
 					Md5:         Md5File(filepath),
 					Fingerprint: props["post-build"],
 					BuildDate:   props["post-timestamp"],
+					Incremental: incremental,
 					Device:      props["pre-device"],
 					Published:   false,
 				}
