@@ -145,12 +145,10 @@ func addUser() {
 	username, _ := reader.ReadString('\n')
 	fmt.Print("Enter password: ")
 	password, _ := reader.ReadString('\n')
-	log.Println("\nSaving...\n")
 
 	// Create user from creds
 	models.CreateUser(strings.TrimSpace(username), strings.TrimSpace(password))
 
 	// Exit
 	log.Println("Done. Welcome", username)
-	log.Println("Exiting")
 }
